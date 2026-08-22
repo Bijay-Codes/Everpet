@@ -1,5 +1,5 @@
-import { useReducer } from "react";
-
+import { useReducer, useState } from "react";
+import { END_POINTS } from "../paths/api-endpoints";
 
 const initialState: InitialState = {
     form: { username: '', email: '', password: '', reEnterPassword: '' },
@@ -74,14 +74,22 @@ function validateUsername(info: InitialState) {
 }
 
 function validateEmail(info: InitialState) {
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (info.form.email.length > 255) {
         return {
             ...info,
             error: { ...info.error, email: 'The email must be within 255 characters' }
         };
-    } else {
-        return { ...info, error: { ...info.error, email: undefined } };
     }
+    else if ((!regexEmail.test(info.form.email)) || info.form.email.length < 5) {
+        return {
+            ...info,
+            error: { ...info.error, email: 'Please enter a valid Email' }
+        };
+    }
+    else {
+        return { ...info, error: { ...info.error, email: undefined } };
+    };
 }
 
 function validatePassword(info: InitialState) {
@@ -89,12 +97,12 @@ function validatePassword(info: InitialState) {
     if (info.form.password.length < 3) {
         return {
             ...info,
-            error: { ...info.error, password: 'The password must be atleast 4 letters' }
+            error: { ...info.error, password: 'The password must have atleast 4 characters' }
         };
-    } else if (info.form.password.length > 10) {
+    } else if (info.form.password.length > 20) {
         return {
             ...info,
-            error: { ...info.error, password: 'The password must be atleast 4 letters' }
+            error: { ...info.error, password: 'The password must less than 20 characters' }
         };
     } else if (!regex.test(info.form.password)) {
         return {
@@ -118,10 +126,45 @@ function validateReEnterPassword(info: InitialState) {
 }
 export default function Register() {
     const [info, reduce] = useReducer(reducer, initialState);
+    const [userInfo, setUserInfo] = useState(null);
+    const [error, setError] = useState(Boolean);
+    // ss = Shared styles- im too lazy to write same classes for things
+    const ssInputs = 'p-2 focus:outline-none bg-slate-300 max-w-100';
+    const ssButtons = 'w-fit px-2 py-1'
     const errMsgStyles = 'text-xs text-rose-400';
-    const post = () => {
-        console.log(info)
-        alert('We got your request, sit back and wait')
+    const post = async () => {
+        const hasError = Object.values(info.error).some(data => data !== undefined);
+        console.log(hasError);
+        if (hasError) {
+            setError(true);
+            return null;
+        }
+        try {
+            const data = await fetch(END_POINTS.register, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: info.form.username,
+                    email: info.form.email,
+                    password: info.form.password
+                })
+            })
+            if (data.ok) {
+                const parsed = await data.json();
+                setUserInfo(parsed);
+                setError(false);
+                console.log(parsed);
+                localStorage.setItem('userinfo', JSON.stringify(parsed));
+                alert('Done');
+            }
+        } catch (err) {
+            alert('Failed noob')
+            console.log(err)
+            setError(true);
+            return err;
+        }
     }
 
     const handleReset = () => {
@@ -132,9 +175,13 @@ export default function Register() {
         <section>
             <h1>Lets get you Started</h1>
             <h2>Register now</h2>
-
             <main>
-                <form action={post} className="flex flex-col gap-4 p-4 max-w-1/2">
+                <form className="flex flex-col gap-4 p-4 max-w-200 m-auto" onSubmit={(e) => {
+                    e.preventDefault()
+                    post();
+                }}>
+                    {userInfo && <span>Welcome abroad new account created</span>}
+                    {error && <span>Invalid data</span>}
                     <label htmlFor="usr-name-input">Enter your name</label>
                     <input type="text" name="usr-name-input" id="usr-name-input"
                         placeholder="Username" value={info.form.username}
@@ -144,6 +191,7 @@ export default function Register() {
                             value: e.target.value.trim()
                         })}
                         onBlur={() => reduce({ type: 'VALIDATE', key: 'username' })}
+                        className={ssInputs}
                         required />
                     {info.error.username && <span className={errMsgStyles}>{info.error.username}</span>}
                     <label htmlFor="email-input">Enter your email</label>
@@ -155,6 +203,7 @@ export default function Register() {
                         })}
                         placeholder="email" value={info.form.email}
                         onBlur={() => reduce({ type: 'VALIDATE', key: 'email' })}
+                        className={ssInputs}
                         required />
                     {info.error.email && <span className={errMsgStyles}>{info.error.email}</span>}
                     <label htmlFor="password-input">Enter your password</label>
@@ -166,6 +215,7 @@ export default function Register() {
                         })}
                         placeholder="enter your password" value={info.form.password}
                         onBlur={() => reduce({ type: 'VALIDATE', key: 'password' })}
+                        className={ssInputs}
                         required />
                     {info.error.password && <span className={errMsgStyles}>{info.error.password}</span>}
                     <label htmlFor="re-enter-password">Confirm password</label>
@@ -177,10 +227,13 @@ export default function Register() {
                         })}
                         placeholder="confirm your password" value={info.form.reEnterPassword}
                         onBlur={() => reduce({ type: 'VALIDATE', key: 'reEnterPassword' })}
+                        className={ssInputs}
                         required />
                     {info.error.reEnterPassword && <span className={errMsgStyles}>{info.error.reEnterPassword}</span>}
-                    <button type="submit">Register</button>
-                    <button type="button" onClick={handleReset}>Clear</button>
+                    <div className="flex gap-4">
+                        <button type="button" onClick={handleReset} className={ssButtons}>Clear</button>
+                        <button type="submit" className={ssButtons}>Register</button>
+                    </div>
                 </form>
             </main>
         </section >
