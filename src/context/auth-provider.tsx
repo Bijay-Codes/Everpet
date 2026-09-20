@@ -1,11 +1,11 @@
 import { useState, useEffect, type ReactNode } from "react";
-import type { UserData } from "./auth-context";
-import { END_POINTS } from "../paths/api-endpoints";
+import type { AuthContextType, UserData } from "./auth-context";
+import { END_POINTS } from "../API/api-endpoints";
 import { getFromLocalStorage } from "../util/util";
 import { AuthContext } from "./auth-context";
 export default function AuthContextProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserData | null>(null);
-    const [status, setStatus] = useState<'pending' | 'success' | 'rejected' | 'server-issue' | null>(null);
+    const [status, setStatus] = useState<AuthContextType['status']>(null);
 
     useEffect(() => {
         const authRequest = async () => {
@@ -41,8 +41,7 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
     }, []);
     return (
         <AuthContext.Provider
-            value={user ? { isLoggedIn: status === 'success', userInfo: user } : null}
-        >
+            value={{ status: status, isLoggedIn: status === 'success', userInfo: user }}>
             {children}
         </AuthContext.Provider>
     )
