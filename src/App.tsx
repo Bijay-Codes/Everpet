@@ -1,9 +1,12 @@
-import Register from "./pages/register"
+import { WelcomeScreen } from "./components/welcome"
+import AuthContextProvider from "./context/auth-provider"
 function App() {
   return (
-    <>
-      <Register />
-    </>
+    <AuthContextProvider >
+      <main>
+        <WelcomeScreen />
+      </main>
+    </AuthContextProvider>
   )
 }
 
