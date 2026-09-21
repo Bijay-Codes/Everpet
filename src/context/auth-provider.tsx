@@ -3,12 +3,13 @@ import type { AuthContextType, UserData } from "./auth-context";
 import { END_POINTS } from "../API/api-endpoints";
 import { getFromLocalStorage } from "../util/util";
 import { AuthContext } from "./auth-context";
+
 export default function AuthContextProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserData | null>(null);
     const [status, setStatus] = useState<AuthContextType['status']>(null);
 
     useEffect(() => {
-        console.log(getFromLocalStorage('x-csrf-token'))
+        console.log('authcontext mounted')
         const authRequest = async () => {
             setStatus('pending');
             try {
@@ -21,7 +22,7 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
                     }
                 }).then(async res => {
                     if (res.ok) {
-                        console.log(res)
+                        console.log(res);
                         const userData: UserData = await res.json();
                         setStatus('success');
                         setUser(userData);
@@ -41,7 +42,7 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
     }, []);
     return (
         <AuthContext.Provider
-            value={{ status: status, isLoggedIn: status === 'success', userInfo: user }}>
+            value={{ status: status, isLoggedIn: status === 'success', userInfo: user, setUser: setUser, setStatus: setStatus }}>
             {children}
         </AuthContext.Provider>
     )
