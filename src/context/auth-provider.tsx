@@ -8,6 +8,7 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
     const [status, setStatus] = useState<AuthContextType['status']>(null);
 
     useEffect(() => {
+        console.log(getFromLocalStorage('x-csrf-token'))
         const authRequest = async () => {
             setStatus('pending');
             try {
@@ -15,17 +16,16 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
                     method: 'POST',
                     credentials: 'include',
                     headers: {
-                        'x-csrf-token': getFromLocalStorage('x-csrf-token'),
+                        Authorization: `Bearer ${getFromLocalStorage('x-csrf-token') ?? ''}`,
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: null
-                    })
+                    }
                 }).then(async res => {
                     if (res.ok) {
+                        console.log(res)
                         const userData: UserData = await res.json();
                         setStatus('success');
                         setUser(userData);
+                        localStorage.setItem('x-csrf-token', JSON.stringify(userData?.csrfToken))
                     } else if (res.status === 500) {
                         setStatus('server-issue');
                     } else {
@@ -45,4 +45,4 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
             {children}
         </AuthContext.Provider>
     )
-}
+};

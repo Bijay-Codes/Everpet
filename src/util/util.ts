@@ -3,11 +3,5 @@ export function getCookie(name: string) {
 }
 
 export function getFromLocalStorage(name: string) {
-    const rawData = localStorage.getItem(name);
-    if (!rawData) return '';
-    try {
-        return JSON.parse(rawData);
-    } catch {
-        return '';
-    }
+    return localStorage.getItem(name);
 }

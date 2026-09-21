@@ -12,8 +12,7 @@ export default function Register() {
         const hasIncompleteData = vals.some(vals => !vals);
         if (hasErrors || hasIncompleteData) return values.err;
 
-
-        const res = await fetch(END_POINTS.register, {
+        const response = await fetch(END_POINTS.register, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -24,8 +23,12 @@ export default function Register() {
                 email: values.inp.email,
                 password: values.inp.password
             })
-        }).then(res => res.json());
-        console.log(res)
+        }).then(res => {
+            return res.json();
+        });
+        if (response.res.isSuccess) {
+            localStorage.setItem('x-csrf-token', response.res.data.csrfToken);
+        }
     }
     return (
         <section className="m-auto h-dvh grid grid-cols-2 items-center max-w-300 bg-slate-900">
