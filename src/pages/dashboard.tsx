@@ -4,11 +4,10 @@ import { AuthContext, type AuthContextType } from "../context/auth-context"
 
 
 export default function Dashboard() {
-    const user: AuthContextType | null = useContext(AuthContext)!;
-
+    const user: AuthContextType | null = useContext(AuthContext);
     if (!user || user === null || !(user.isLoggedIn) || user.status === 'pending' || user.status === 'rejected' || user.status === 'server-issue') {
         return <Navigate to='/' replace />;
-    }
+    };
     return (
         <section className="text-white">
             <div className="text-white text-center text-3xl">
@@ -16,5 +15,5 @@ export default function Dashboard() {
                 <span className="text-xl">Lets go on a ride</span>
             </div>
         </section >
-    )
+    );
 }

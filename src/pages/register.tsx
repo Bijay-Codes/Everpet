@@ -1,10 +1,12 @@
-import { useReducer } from "react"
+import { useContext, useReducer } from "react"
 import { END_POINTS } from "../API/api-endpoints";
-
+import { AuthContext } from "../context/auth-context";
+import { useNavigate } from "react-router-dom";
 export default function Register() {
+    const user = useContext(AuthContext);
     const [values, dispatch] = useReducer(handleInputDispatch, formValues);
     const inputs = 'bg-slate-300 px-4 py-2 text-black';
-
+    const navTo = useNavigate();
     async function handleSubmit(values: FormState) {
         const vals = Object.values(values.inp);
         const errors = Object.values(values.err);
@@ -23,11 +25,16 @@ export default function Register() {
                 email: values.inp.email,
                 password: values.inp.password
             })
-        }).then(res => {
-            return res.json();
+        }).then(async res => {
+            return await res.json();
         });
         if (response.res.isSuccess) {
-            localStorage.setItem('x-csrf-token', response.res.data.csrfToken);
+            if (response.res.data.csrfToken) {
+                user?.setUser(response.res.data);
+                user?.setStatus('success');
+                localStorage.setItem('x-csrf-token', response.res.data.csrfToken);
+                navTo('/dashboard')
+            };
         }
     }
     return (

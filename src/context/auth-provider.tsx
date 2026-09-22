@@ -9,7 +9,6 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
     const [status, setStatus] = useState<AuthContextType['status']>(null);
 
     useEffect(() => {
-        console.log('authcontext mounted')
         const authRequest = async () => {
             setStatus('pending');
             try {
@@ -22,11 +21,13 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
                     }
                 }).then(async res => {
                     if (res.ok) {
-                        console.log(res);
-                        const userData: UserData = await res.json();
-                        setStatus('success');
+                        const parsed = await res.json();
+                        const userData: UserData = parsed.res.data;
                         setUser(userData);
-                        localStorage.setItem('x-csrf-token', JSON.stringify(userData?.csrfToken))
+                        setStatus('success');
+                        if (userData?.csrfToken) {
+                            localStorage.setItem('x-csrf-token', userData.csrfToken);
+                        }
                     } else if (res.status === 500) {
                         setStatus('server-issue');
                     } else {

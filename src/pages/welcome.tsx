@@ -1,12 +1,18 @@
 import { useContext } from "react"
-import { AuthContext } from "../context/auth-context"
-import { useNavigate } from "react-router-dom";
-
-function CTAButtons() {
-    const navTo = useNavigate();
+import { AuthContext, type AuthContextType } from "../context/auth-context"
+import { useNavigate, type NavigateFunction } from "react-router-dom";
+function isRequestSuccess(status: AuthContextType['status'] | undefined) {
+    if (status === null || status === 'pending' || status === undefined) {
+        return false;
+    } else {
+        return true;
+    }
+}
+function CTAButtons({ navTo }: { navTo: NavigateFunction }) {
+    const status = useContext(AuthContext)?.status;
     return (
         <section className="flex flex-col gap-4">
-            <span>Our Auto login attempt failed please login or register to continue</span>
+            <span>Our Auto login attempt [ {status === 'pending' ? 'In progress' : status === 'rejected' ? 'got Rejected' : status === 'server-issue' ? 'had some server issues please try again later' : ''} ], please login or register to continue</span>
             <div className="flex gap-4 m-auto">
                 <button className="bg-fuchsia-400 text-fuchsia-900 py-2 px-6 rounded" onClick={() => navTo('/login')}>Login</button>
                 <button className="bg-violet-400 text-violet-950 px-6 py-2 rounded" onClick={() => navTo('/register')}>
@@ -14,27 +20,25 @@ function CTAButtons() {
                 </button>
             </div>
         </section>
-    );
-};
+    )
+}
 export function WelcomeScreen() {
+    const navTo = useNavigate();
     const userInfo = useContext(AuthContext);
-    const status = userInfo?.status ?? 'pending';
-    const showCTA = status === 'server-issue' || status === 'pending' || status === 'rejected';
     return (
         <section className="flex flex-col gap-6 justify-center items-center max-w-200 m-auto text-white h-full mt-auto">
             <h1 className="text-2xl font-extrabold">Welcome to Everpet</h1>
             <h2 className="text-center">The backend is starting up please wait (You can expect this to take approx 20-50 seconds depending on your network connection)</h2>
             <h3>Status : {userInfo?.status} </h3>
-            {showCTA ? (
-                <CTAButtons />
-            ) : (
+            {isRequestSuccess(userInfo?.status) ? (
                 <button
-                    className="bg-cyan-400 text-cyan-950 px-6 py-2 rounded"
-                    disabled={!showCTA}>
+                    onClick={() => navTo('/dashboard')}
+                    className="bg-cyan-400 text-cyan-950 px-6 py-2 rounded">
                     Start now
                 </button>
-            )
-            }
-        </section >
-    );
-};
+            ) : (
+                <CTAButtons navTo={navTo} />
+            )}
+        </section>
+    )
+}

@@ -19,13 +19,13 @@ export default function Login() {
             })
         });
         const parsed = await response.json();
-        console.log(parsed.res.isSuccess)
-        if (parsed.res.isSuccess) {
+        if (response.ok && parsed.res.isSuccess) {
             stateActions?.setUser(parsed.res.data);
             stateActions?.setStatus('success');
-            navTo('/dashboard')
+            localStorage.setItem('x-csrf-token', parsed.res.data.csrfToken);
+            navTo('/dashboard');
         } else {
-            alert(`failed bacause: ${parsed.res.isSuccess}, try again1`);
+            alert(`failed bacause: ${parsed.res.message}, try again1`);
         }
     };
     return (
