@@ -1,8 +1,8 @@
-import { END_POINTS } from "../API/api-endpoints";
 import { useActionState, useContext, useEffect, useReducer } from "react";
 import { AuthContext, type AuthContextType } from "../context/auth-context";
 import { useNavigate } from "react-router-dom";
 import Toast from "../components/toasts";
+import login from "../API/fetch-login";
 /*
 
 What it should do,
@@ -27,35 +27,6 @@ handle error states of input data being entered -
 */
 
 
-async function login(_prev: FormState, formInfo: FormData) {
-    try {
-        const loginResponse = await fetch(END_POINTS.login, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                identifier: formInfo.get('identifier-inp'),
-                password: formInfo.get('password-inp')
-            })
-        });
-        if (loginResponse.ok) {
-            const parsed = await loginResponse.json();
-            console.log(parsed);
-            return parsed;
-        } else {
-            try {
-                const parsed = await loginResponse.json();
-                return parsed.res.err;
-            } catch {
-                return { isSuccess: false, err: { message: 'Something went wrong. Try again.' } };
-            }
-        };
-    } catch {
-        return { isSuccess: false, err: { message: 'Something went wrong, try again.' } };
-    };
-};
 
 function handleDispatch(prev: FormState, actions: Actions) {
     switch (actions.type) {

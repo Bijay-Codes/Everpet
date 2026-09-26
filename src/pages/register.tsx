@@ -1,9 +1,9 @@
 import { useActionState, useContext, useEffect, useReducer, type SetStateAction } from "react"
-import { END_POINTS } from "../API/api-endpoints"
 import type { ServerResponse } from "../types/auth-responses";
 import { useNavigate, type NavigateFunction } from "react-router-dom";
 import { AuthContext, type UserData } from "../context/auth-context";
 import Toast from "../components/toasts";
+import register from "../API/fetch-register";
 
 const initialFormState = {
     inp: {
@@ -37,35 +37,6 @@ type Actions = {
 }
 
 
-async function register(_prev: FormState, form: FormData) {
-    const registerResponse = await fetch(END_POINTS.register, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            username: form.get('username-inp'),
-            email: form.get('email-inp'),
-            password: form.get('password-inp')
-        })
-    });
-
-    if (registerResponse.ok) {
-        const parsed = await registerResponse.json();
-        if (parsed.res.isSuccess) {
-            return parsed.res;
-        } else {
-            return parsed.res.err;
-        };
-    } else {
-        try {
-            const parsed = await registerResponse.json();
-            return parsed.res.err;
-        } catch {
-            return { isSuccess: false, message: 'Something went wrong please try again later' };
-        };
-    };
-};
 
 function handleResponse(response: ServerResponse, setUser: React.Dispatch<SetStateAction<UserData>>, navTo: NavigateFunction) {
     if (response.isSuccess) {
