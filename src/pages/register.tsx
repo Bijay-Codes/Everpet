@@ -1,6 +1,9 @@
-import { useActionState, useReducer } from "react"
+import { useActionState, useContext, useEffect, useReducer, type SetStateAction } from "react"
 import { END_POINTS } from "../API/api-endpoints"
-
+import type { ServerResponse } from "../types/auth-responses";
+import { useNavigate, type NavigateFunction } from "react-router-dom";
+import { AuthContext, type UserData } from "../context/auth-context";
+import Toast from "../components/toasts";
 
 const initialFormState = {
     inp: {
@@ -45,10 +48,31 @@ async function register(_prev: FormState, form: FormData) {
             email: form.get('email-inp'),
             password: form.get('password-inp')
         })
-    })
-    const parsed = await registerResponse.json();
-    return parsed;
-}
+    });
+
+    if (registerResponse.ok) {
+        const parsed = await registerResponse.json();
+        if (parsed.res.isSuccess) {
+            return parsed.res;
+        } else {
+            return parsed.res.err;
+        };
+    } else {
+        try {
+            const parsed = await registerResponse.json();
+            return parsed.res.err;
+        } catch {
+            return { isSuccess: false, message: 'Something went wrong please try again later' };
+        };
+    };
+};
+
+function handleResponse(response: ServerResponse, setUser: React.Dispatch<SetStateAction<UserData>>, navTo: NavigateFunction) {
+    if (response.isSuccess) {
+        setUser(response.data);
+        navTo('/dashboard');
+    };
+};
 
 function handleDispatch(prev: FormState, action: Actions) {
     switch (action.type) {
@@ -70,16 +94,28 @@ function handleDispatch(prev: FormState, action: Actions) {
 
 
 export default function Register() {
-    const [response, handleRegister, isPending] = useActionState(register, {});
-    const [form, dispatch] = useReducer(handleDispatch, initialFormState)
-    console.log(response, isPending, form, dispatch);
+    const [response, handleRegister, isPending] = useActionState(register, { isSuccess: null });
+    const [form, dispatch] = useReducer(handleDispatch, initialFormState);
+
+    const user = useContext(AuthContext);
+    if (!user) throw new Error('Auth context not setup / provided properly');
+    const { setUser } = user;
+
+    const navTo = useNavigate();
+
+    useEffect(() => {
+        handleResponse(response, setUser, navTo);
+    }, [response, setUser, navTo]);
+
     const inputs = 'bg-card-bg text-white p-2';
+
     return (
-        <section className="h-dvh max-w-200 m-auto text-white">
-            <form action={handleRegister} className="p-4 flex flex-col h-full justify-center gap-6">
+        <section className="h-dvh w-full m-auto text-white relative">
+            <span>{!isPending && !response.isSuccess && < Toast message={response.message} details={response.details ?? ''} status={response.code ?? ''} />}</span>
+            <form action={handleRegister} className="p-4 flex flex-col h-full justify-center gap-6 max-w-200 m-auto">
                 <label htmlFor="username-inp">Enter your user-name</label>
                 <input type="text" name="username-inp" id="username-inp" required
-                    className={inputs} placeholder="user-name"
+                    className={inputs} placeholder="user-name" value={form.inp.username}
                     onChange={(e) =>
                         dispatch({
                             type: 'Update',
@@ -89,7 +125,7 @@ export default function Register() {
 
                 <label htmlFor="email-inp">Enter your Email</label>
                 <input type="email" name="email-inp" id="email-inp" required
-                    className={inputs} placeholder="E-mail"
+                    className={inputs} placeholder="E-mail" value={form.inp.email}
                     onChange={(e) =>
                         dispatch({
                             type: 'Update',
@@ -99,7 +135,7 @@ export default function Register() {
 
                 <label htmlFor="password-inp">Create your password</label>
                 <input type="password" name="password-inp" id="password-inp" required
-                    className={inputs} placeholder="Password"
+                    className={inputs} placeholder="Password" value={form.inp.password}
                     onChange={(e) =>
                         dispatch({
                             type: 'Update',
@@ -109,7 +145,7 @@ export default function Register() {
 
                 <label htmlFor="password-inp-2">Enter your password again</label>
                 <input type="password" name="password-inp-2" id="password-inp-2" required
-                    className={inputs} placeholder="Confirm-password"
+                    className={inputs} placeholder="Confirm-password" value={form.inp.reEnterPass}
                     onChange={(e) =>
                         dispatch({
                             type: 'Update',
@@ -117,11 +153,11 @@ export default function Register() {
                             val: e.target.value
                         })} />
 
-                <div className="flex gap-4">
+                <div className="flex gap-6">
                     <button className="bg-status-danger rounded py-2 px-4" type="reset">Clear</button>
                     <button className="bg-status-success rounded py-2 px-4">{isPending ? 'Processing' : 'Register'}</button>
                 </div>
             </form>
         </section>
-    )
-}
+    );
+};

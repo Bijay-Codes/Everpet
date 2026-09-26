@@ -1,8 +1,8 @@
 import { END_POINTS } from "../API/api-endpoints";
-import { useActionState, useContext, useEffect, useReducer, useState } from "react";
+import { useActionState, useContext, useEffect, useReducer } from "react";
 import { AuthContext, type AuthContextType } from "../context/auth-context";
 import { useNavigate } from "react-router-dom";
-
+import Toast from "../components/toasts";
 /*
 
 What it should do,
@@ -47,7 +47,6 @@ async function login(_prev: FormState, formInfo: FormData) {
         } else {
             try {
                 const parsed = await loginResponse.json();
-                console.log(parsed)
                 return parsed.res.err;
             } catch {
                 return { isSuccess: false, err: { message: 'Something went wrong. Try again.' } };
@@ -169,24 +168,3 @@ export default function Login() {
 };
 
 
-function Toast({ message, details, status }: { message: string, details?: string, status?: number | '' }) {
-    const [isVisible, setVisible] = useState(true);
-
-    useEffect(() => {
-        setTimeout(() => {
-            setVisible(false);
-        }, 3000);
-    }, []);
-
-    return (
-        <section>
-            {message && isVisible && <div className="absolute top-0 right-0 bg-status-danger min-h-20 min-w-40 p-2">
-                <span>Error</span>
-                {status && <span>{status}</span>}
-                <h1>{message}</h1>
-                {details && <h2>{details}</h2>}
-            </div>
-            }
-        </section>
-    );
-};
