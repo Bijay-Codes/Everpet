@@ -1,189 +1,127 @@
-import { useContext, useReducer } from "react"
-import { END_POINTS } from "../API/api-endpoints";
-import { AuthContext } from "../context/auth-context";
-import { useNavigate } from "react-router-dom";
-export default function Register() {
-    const user = useContext(AuthContext);
-    if (!user) throw new Error('Auth context not set up');
-    const { setUser } = user;
-    if (!setUser) throw new Error('Auth context failed to provide values');
+import { useActionState, useReducer } from "react"
+import { END_POINTS } from "../API/api-endpoints"
 
-    const [values, dispatch] = useReducer(handleInputDispatch, formValues);
-    const inputs = 'bg-slate-300 px-4 py-2 text-black';
-    const navTo = useNavigate();
-    async function handleSubmit(values: FormState) {
-        const vals = Object.values(values.inp);
-        const errors = Object.values(values.err);
-        const hasErrors = errors.some(err => err);
-        const hasIncompleteData = vals.some(vals => !vals);
-        if (hasErrors || hasIncompleteData) return values.err;
 
-        const response = await fetch(END_POINTS.register, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: values.inp.username,
-                email: values.inp.email,
-                password: values.inp.password
-            })
-        }).then(async res => {
-            return await res.json();
-        });
-        if (response.res.isSuccess) {
-            setUser(response.res.data);
-            localStorage.setItem('x-csrf-token', response.res.data.csrfToken);
-            navTo('/dashboard')
-        }
-    };
-    return (
-        <section className="m-auto h-dvh grid grid-cols-2 items-center max-w-300 bg-slate-900">
-            <form
-                action={() => {
-                    handleSubmit(values)
-                }
-                }
-                className="flex flex-col gap-4 text-white">
-
-                <label htmlFor="name">Enter your user name</label>
-                <input type="text" id="username" placeholder="user name"
-                    className={inputs}
-                    onChange={(e) => dispatch({
-                        type: 'CHANGE',
-                        key: 'username',
-                        val: e.target.value
-                    })}
-                    onBlur={() => dispatch({ type: 'VALIDATE', key: 'username' })}
-                    value={values.inp.username}
-                />
-
-                <label htmlFor="email">Enter your email</label>
-                <input type="text" placeholder="Email"
-                    className={inputs}
-                    onChange={(e) => dispatch({
-                        type: 'CHANGE',
-                        key: 'email',
-                        val: e.target.value
-                    })}
-                    onBlur={() => dispatch({ type: 'VALIDATE', key: 'email' })}
-                    value={values.inp.email}
-                />
-
-                <label htmlFor="password">Enter your Password</label>
-                <input type="password" id="password" placeholder="your password"
-                    className={inputs}
-                    onChange={(e) => dispatch({
-                        type: 'CHANGE',
-                        key: 'password',
-                        val: e.target.value
-                    })}
-                    onBlur={() => dispatch({ type: 'VALIDATE', key: 'password' })}
-                    value={values.inp.password}
-                />
-
-                <label htmlFor="re-enter-password">Re-enter your password</label>
-                <input type="password" placeholder="re-enter your password to be sure"
-                    className={inputs}
-                    onChange={(e) => dispatch({
-                        type: 'CHANGE',
-                        key: 'reEnterPassword',
-                        val: e.target.value
-                    })}
-                    onBlur={() => dispatch({ type: 'VALIDATE', key: 'password' })}
-                    value={values.inp.reEnterPassword}
-                />
-
-                <div className="flex gap-4">
-                    <button
-                        className="bg-emerald-300 py-2 px-8 rounded text-emerald-900">
-                        Register
-                    </button>
-                    <button type="button"
-                        onClick={() => dispatch({ type: 'CLEAR' })}
-                        className="bg-rose-300 py-2 px-8 rounded text-rose-900">
-                        Clear
-                    </button>
-                </div>
-            </form>
-        </section>
-    );
-};
-
-const formValues: FormState = {
+const initialFormState = {
     inp: {
         username: '',
         email: '',
         password: '',
-        reEnterPassword: ''
+        reEnterPass: ''
     },
     err: {
         username: '',
         email: '',
         password: '',
-        reEnterPassword: ''
+        reEnterPass: ''
     }
-};
-function handleInputDispatch(prev: FormState, action: Action) {
-    switch (action.type) {
-        case ('CHANGE'):
-            return {
-                ...prev,
-                inp: {
-                    ...prev.inp,
-                    [action.key!]: action.val ?? ''
-                }
-            }
-        case ('VALIDATE'):
-            return {
-                ...prev,
-                err: {
-                    ...prev.err,
-                    [action.key!]: validator(prev, action)
-                }
-            }
-        case ('CLEAR'):
-            return formValues
-    }
-};
-
-function validator(prev: FormState, action: Action) {
-    switch (action.key) {
-        case ('email'):
-            return validateEmail(prev.inp.email);
-    }
-};
-
-function validateEmail(val: string | null) {
-    if (isFinite(Number(val))) return 'Email must be a string';
-    if (!val) return 'Enter an valid email';
-    let trimmed: string;
-    try {
-        trimmed = val.trim().toLowerCase();
-        if (!trimmed) return 'Enter an valid email';
-        if (trimmed.length > 255) return 'The length of the email cannot be higher than 255';
-    } catch {
-        if (typeof val !== 'string') return 'The value must be a string'
-    }
-    return ''
-};
-
-
-type FormInput = {
-    username: string | '',
-    email: string | '',
-    password: string | '',
-    reEnterPassword: string | ''
 };
 
 type FormState = {
-    inp: FormInput,
-    err: Record<keyof FormInput, string>
+    inp: Record<keyof typeof initialFormState.inp, string>,
+    err: Record<keyof typeof initialFormState.inp, string>
 };
 
-type Action = {
-    type: 'VALIDATE' | 'CHANGE' | 'CLEAR',
-    key?: keyof FormState['err'],
-    val?: string
+type Actions = {
+    type: 'Update',
+    feild: keyof typeof initialFormState.inp,
+    val: string
+} | {
+    type: 'Validate',
+    feild: keyof typeof initialFormState.inp;
+} | {
+    type: 'Clear';
+}
+
+
+async function register(_prev: FormState, form: FormData) {
+    const registerResponse = await fetch(END_POINTS.register, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: form.get('username-inp'),
+            email: form.get('email-inp'),
+            password: form.get('password-inp')
+        })
+    })
+    const parsed = await registerResponse.json();
+    return parsed;
+}
+
+function handleDispatch(prev: FormState, action: Actions) {
+    switch (action.type) {
+
+        case ('Update'):
+            return {
+                ...prev,
+                inp: { ...prev.inp, [action.feild]: action.val }
+            };
+
+        case ('Clear'):
+            return initialFormState;
+
+        case ('Validate'):
+            return prev;
+    };
 };
+
+
+
+export default function Register() {
+    const [response, handleRegister, isPending] = useActionState(register, {});
+    const [form, dispatch] = useReducer(handleDispatch, initialFormState)
+    console.log(response, isPending, form, dispatch);
+    const inputs = 'bg-card-bg text-white p-2';
+    return (
+        <section className="h-dvh max-w-200 m-auto text-white">
+            <form action={handleRegister} className="p-4 flex flex-col h-full justify-center gap-6">
+                <label htmlFor="username-inp">Enter your user-name</label>
+                <input type="text" name="username-inp" id="username-inp" required
+                    className={inputs} placeholder="user-name"
+                    onChange={(e) =>
+                        dispatch({
+                            type: 'Update',
+                            feild: 'username',
+                            val: e.target.value
+                        })} />
+
+                <label htmlFor="email-inp">Enter your Email</label>
+                <input type="email" name="email-inp" id="email-inp" required
+                    className={inputs} placeholder="E-mail"
+                    onChange={(e) =>
+                        dispatch({
+                            type: 'Update',
+                            feild: 'email',
+                            val: e.target.value
+                        })} />
+
+                <label htmlFor="password-inp">Create your password</label>
+                <input type="password" name="password-inp" id="password-inp" required
+                    className={inputs} placeholder="Password"
+                    onChange={(e) =>
+                        dispatch({
+                            type: 'Update',
+                            feild: 'password',
+                            val: e.target.value
+                        })} />
+
+                <label htmlFor="password-inp-2">Enter your password again</label>
+                <input type="password" name="password-inp-2" id="password-inp-2" required
+                    className={inputs} placeholder="Confirm-password"
+                    onChange={(e) =>
+                        dispatch({
+                            type: 'Update',
+                            feild: 'reEnterPass',
+                            val: e.target.value
+                        })} />
+
+                <div className="flex gap-4">
+                    <button className="bg-status-danger rounded py-2 px-4" type="reset">Clear</button>
+                    <button className="bg-status-success rounded py-2 px-4">{isPending ? 'Processing' : 'Register'}</button>
+                </div>
+            </form>
+        </section>
+    )
+}

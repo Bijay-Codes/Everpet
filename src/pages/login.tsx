@@ -41,11 +41,14 @@ async function login(_prev: FormState, formInfo: FormData) {
             })
         });
         if (loginResponse.ok) {
-            return await loginResponse.json();
+            const parsed = await loginResponse.json();
+            console.log(parsed);
+            return parsed;
         } else {
             try {
                 const parsed = await loginResponse.json();
-                return parsed.resObj.err;
+                console.log(parsed)
+                return parsed.res.err;
             } catch {
                 return { isSuccess: false, err: { message: 'Something went wrong. Try again.' } };
             }
@@ -113,12 +116,12 @@ export default function Login() {
     const authContext = useContext(AuthContext);
     if (!authContext) {
         throw new Error('Login must be used within an AuthContext provider');
-    }
+    };
     const { setUser }: AuthContextType = authContext;
     useEffect(() => {
         if (response.isSuccess) {
             setUser(response.res.data);
-            navTo('/dashboard')
+            navTo('/dashboard');
         };
     }, [response, setUser, navTo]);
     return (
