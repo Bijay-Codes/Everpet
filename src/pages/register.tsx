@@ -4,6 +4,10 @@ import { AuthContext } from "../context/auth-context";
 import { useNavigate } from "react-router-dom";
 export default function Register() {
     const user = useContext(AuthContext);
+    if (!user) throw new Error('Auth context not set up');
+    const { setUser } = user;
+    if (!setUser) throw new Error('Auth context failed to provide values');
+
     const [values, dispatch] = useReducer(handleInputDispatch, formValues);
     const inputs = 'bg-slate-300 px-4 py-2 text-black';
     const navTo = useNavigate();
@@ -29,14 +33,11 @@ export default function Register() {
             return await res.json();
         });
         if (response.res.isSuccess) {
-            if (response.res.data.csrfToken) {
-                user?.setUser(response.res.data);
-                user?.setStatus('success');
-                localStorage.setItem('x-csrf-token', response.res.data.csrfToken);
-                navTo('/dashboard')
-            };
+            setUser(response.res.data);
+            localStorage.setItem('x-csrf-token', response.res.data.csrfToken);
+            navTo('/dashboard')
         }
-    }
+    };
     return (
         <section className="m-auto h-dvh grid grid-cols-2 items-center max-w-300 bg-slate-900">
             <form
@@ -107,8 +108,8 @@ export default function Register() {
                 </div>
             </form>
         </section>
-    )
-}
+    );
+};
 
 const formValues: FormState = {
     inp: {
@@ -123,7 +124,7 @@ const formValues: FormState = {
         password: '',
         reEnterPassword: ''
     }
-}
+};
 function handleInputDispatch(prev: FormState, action: Action) {
     switch (action.type) {
         case ('CHANGE'):
@@ -145,14 +146,14 @@ function handleInputDispatch(prev: FormState, action: Action) {
         case ('CLEAR'):
             return formValues
     }
-}
+};
 
 function validator(prev: FormState, action: Action) {
     switch (action.key) {
         case ('email'):
             return validateEmail(prev.inp.email);
     }
-}
+};
 
 function validateEmail(val: string | null) {
     if (isFinite(Number(val))) return 'Email must be a string';
@@ -166,7 +167,7 @@ function validateEmail(val: string | null) {
         if (typeof val !== 'string') return 'The value must be a string'
     }
     return ''
-}
+};
 
 
 type FormInput = {
@@ -174,15 +175,15 @@ type FormInput = {
     email: string | '',
     password: string | '',
     reEnterPassword: string | ''
-}
+};
 
 type FormState = {
     inp: FormInput,
     err: Record<keyof FormInput, string>
-}
+};
 
 type Action = {
     type: 'VALIDATE' | 'CHANGE' | 'CLEAR',
     key?: keyof FormState['err'],
     val?: string
-}
+};

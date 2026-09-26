@@ -5,10 +5,11 @@ import Register from "./pages/register";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
 
+
 function App() {
   return (
-    <BrowserRouter>
-      <AuthContextProvider >
+    <AuthContextProvider >
+      <BrowserRouter>
         <section className="px-12 bg-slate-900 w-full h-screen">
           <Routes>
             <Route path="/" element={<WelcomeScreen />} />
@@ -17,8 +18,8 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </section>
-      </AuthContextProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthContextProvider>
   );
 };
 

@@ -5,7 +5,8 @@ import { AuthContext, type AuthContextType } from "../context/auth-context"
 
 export default function Dashboard() {
     const user: AuthContextType | null = useContext(AuthContext);
-    if (!user || user === null || !(user.isLoggedIn) || user.status === 'pending' || user.status === 'rejected' || user.status === 'server-issue') {
+
+    if (!user || !user.isLoggedIn) {
         return <Navigate to='/' replace />;
     };
     return (

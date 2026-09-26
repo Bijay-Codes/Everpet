@@ -1,1 +1,12 @@
 @import 'tailwindcss';
+
+@theme {
+    --color-dark-max: #000519;
+    --color-dark-bg: #11192D;
+    --color-card-bg: #222C42;
+    --color-status-danger: #EE3772;
+    --color-status-info: #37B6ED;
+    --color-status-success: #69D130;
+    --color-accent-bg: #9407F9;
+    --color-highlight: #DDFA07;
+}
