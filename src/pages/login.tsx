@@ -1,6 +1,7 @@
 import { END_POINTS } from "../API/api-endpoints";
 import { useActionState, useContext, useEffect, useReducer, useState } from "react";
 import { AuthContext, type AuthContextType } from "../context/auth-context";
+import { useNavigate } from "react-router-dom";
 
 /*
 
@@ -108,6 +109,7 @@ export default function Login() {
     const [response, handleLogin, isPending] = useActionState(login, { isSuccess: null, data: {}, err: {} });
     const [form, dispatch] = useReducer(handleDispatch, initialFormState);
 
+    const navTo = useNavigate();
     const authContext = useContext(AuthContext);
     if (!authContext) {
         throw new Error('Login must be used within an AuthContext provider');
@@ -116,8 +118,9 @@ export default function Login() {
     useEffect(() => {
         if (response.isSuccess) {
             setUser(response.res.data);
+            navTo('/dashboard')
         };
-    }, [response, setUser]);
+    }, [response, setUser, navTo]);
     return (
         <section className="relative">
             <span>{!isPending && !response.isSuccess && < Toast message={response.message} details={response.details ?? ''} status={response.code ?? ''} />}</span>
