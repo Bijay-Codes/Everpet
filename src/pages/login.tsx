@@ -1,8 +1,9 @@
 import { useActionState, useContext, useEffect, useReducer } from "react";
 import { AuthContext, type AuthContextType } from "../context/auth-context";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import Toast from "../components/toasts";
 import login from "../API/fetch-login";
+import usePasswordToggle from "../hooks/usePasswordToggle";
 /*
 
 What it should do,
@@ -82,6 +83,8 @@ export default function Login() {
     const [response, handleLogin, isPending] = useActionState(login, { isSuccess: null, data: {}, err: {} });
     const [form, dispatch] = useReducer(handleDispatch, initialFormState);
 
+    const { toggle, type } = usePasswordToggle();
+
     const navTo = useNavigate();
     const authContext = useContext(AuthContext);
     if (!authContext) {
@@ -94,6 +97,7 @@ export default function Login() {
             navTo('/dashboard');
         };
     }, [response, setUser, navTo]);
+
     return (
         <section className="relative">
             <span>{!isPending && !response.isSuccess && < Toast message={response.message} details={response.details ?? ''} status={response.code ?? ''} />}</span>
@@ -114,24 +118,28 @@ export default function Login() {
                 </div>
                 <div className="flex flex-col gap-2">
                     <label htmlFor="identifier-login">Enter your Password</label>
-                    <input type="password" placeholder="password" name='password-inp'
+                    <input type={type} placeholder="password" name='password-inp'
                         className="p-2 rounded bg-card-bg" value={form.inp.password}
                         onChange={(e) => dispatch({
                             type: 'Update',
                             feild: 'password',
                             val: e.target.value
                         })} />
+                    <span onClick={toggle}>show</span>
                 </div>
 
-                <div className="flex gap-6">
-                    <button
-                        type="reset" onClick={() => dispatch({ type: 'Clear' })} className="bg-status-danger py-2 px-6 rounded">
-                        Clear
-                    </button>
-                    <button disabled={isPending}
-                        className="bg-status-success py-2 px-6 rounded">
-                        {isPending ? 'Processing' : 'Login'}
-                    </button>
+                <div className="flex flex-col gap-4">
+                    <div className="flex gap-6">
+                        <button
+                            type="reset" onClick={() => dispatch({ type: 'Clear' })} className="bg-status-danger py-2 px-6 rounded">
+                            Clear
+                        </button>
+                        <button disabled={isPending}
+                            className="bg-status-success py-2 px-6 rounded">
+                            {isPending ? 'Processing' : 'Login'}
+                        </button>
+                    </div>
+                    <span>Dont have an account? <NavLink to='/register' className='text-highlight hover:bg-highlight hover:text-black py-1 px-2 rounded'>Register now!</NavLink></span>
                 </div>
             </form>
         </section>
