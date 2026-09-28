@@ -13,8 +13,10 @@ function CTAButtons({ navTo, status }: { navTo: NavigateFunction, status:Status 
                 </button>
             </div>
         </section>
-    )
-}
+    );
+};
+
+
 export function WelcomeScreen() {
     const { status } = useAutoLogin();
     const navTo = useNavigate();
@@ -37,5 +39,5 @@ export function WelcomeScreen() {
                 <CTAButtons navTo={navTo} status={status} />
             )}
         </section>
-    )
-}
+    );
+};

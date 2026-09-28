@@ -7,7 +7,8 @@ export function getFromLocalStorage(name: string) {
 }
 
 
-export function validatePassword(password: string, confirmPassword?: string) {
-    if (password.length < 8) return 'Password must be atleast 7 characters long';
+export function validatePassword(password: string) {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
+    return passwordRegex.test(password);
 }    

@@ -25,6 +25,6 @@ export default async function login(_prev: unknown, formInfo: FormData) {
             }
         };
     } catch {
-        return { isSuccess: false, err: { message: 'Something went wrong, try again.' } };
+        return { isSuccess: false, err: { message: 'The server might be having some issues try again after some time' } };
     };
 };

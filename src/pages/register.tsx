@@ -35,7 +35,7 @@ type Actions = {
     feild: keyof typeof initialFormState.inp;
 } | {
     type: 'Clear';
-}
+};
 
 
 

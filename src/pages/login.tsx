@@ -55,7 +55,7 @@ type Actions = {
     feild: 'indentifier' | 'password'
 } | {
     type: 'Clear'
-}
+};
 
 interface FormState {
     inp: {
@@ -66,7 +66,7 @@ interface FormState {
         identifier: string;
         password: string;
     }
-}
+};
 
 const initialFormState = {
     inp: {
@@ -77,7 +77,7 @@ const initialFormState = {
         identifier: '',
         password: ''
     }
-}
+};
 
 export default function Login() {
     const [response, handleLogin, isPending] = useActionState(login, { isSuccess: null, data: {}, err: {} });
@@ -145,5 +145,3 @@ export default function Login() {
         </section>
     );
 };
-
-

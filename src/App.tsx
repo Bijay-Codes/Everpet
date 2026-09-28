@@ -4,13 +4,15 @@ import AuthContextProvider from "./context/auth-provider";
 import Register from "./pages/register";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
+import ShowOffline from "./components/show-offline";
 
 
 function App() {
   return (
     <AuthContextProvider >
       <BrowserRouter>
-        <section className="px-12 bg-slate-900 w-full h-screen">
+        <section className="px-12 bg-slate-900 w-full h-screen relative">
+          <ShowOffline />
           <Routes>
             <Route path="/" element={<WelcomeScreen />} />
             <Route path="/register" element={<Register />} />

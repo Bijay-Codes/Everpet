@@ -36,7 +36,10 @@ export default function useAutoLogin() {
                 setStatus('rejected');
             };
         }
-        )
+        ).catch(() => {
+            setStatus('rejected');
+        });
+
     }, [status, setUser]);
     return {
         status: status

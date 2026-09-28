@@ -6,6 +6,7 @@ export type AuthContextType = {
     isLoggedIn: boolean;
     userInfo: UserData;
     setUser: React.Dispatch<React.SetStateAction<UserData>>,
+    networkStatus: 'online' | 'offline' | null
 }
 export type UserData = {
     userId: string | null,
