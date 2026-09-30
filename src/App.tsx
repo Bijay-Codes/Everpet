@@ -6,6 +6,7 @@ import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
 import ShowOffline from "./components/show-offline";
 import HandleRedirect from "./components/handle-redirect";
+import Navbar from "./components/navbar";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route element={<HandleRedirect />} >
+              <Route path="/" element={<Navbar />} />
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
           </Routes>

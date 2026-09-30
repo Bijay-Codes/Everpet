@@ -3,13 +3,14 @@ export default async function register(_prev: unknown, form: FormData) {
     try {
         const registerResponse = await fetch(END_POINTS.register, {
             method: 'POST',
+            credentials: "include",
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username: form.get('username-inp'),
-                email: form.get('email-inp'),
-                password: form.get('password-inp')
+                username: form.get('username'),
+                email: form.get('email'),
+                password: form.get('password')
             })
         });
 

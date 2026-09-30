@@ -42,8 +42,9 @@ type Actions = {
 
 
 function handleResponse(response: ServerResponse, setUser: React.Dispatch<SetStateAction<UserData>>, navTo: NavigateFunction) {
-    if (response.isSuccess) {
+    if (response.isSuccess && response.data) {
         setUser(response.data);
+        localStorage.setItem('x-csrf-token', response.data.csrfToken);
         navTo('/dashboard');
     };
 };
@@ -88,8 +89,7 @@ function handleDispatch(prev: FormState, action: Actions) {
 };
 export default function Register() {
     const [response, handleRegister, isPending] = useActionState(register, { isSuccess: null });
-    const [form, dispatch] = useReducer(handleDispatch, initialFormState);
-
+    const [form, dispatch] = useReducer(handleDispatch, initialFormState)
     const { toggle, type } = usePasswordToggle();
 
     const user = useContext(AuthContext);
@@ -106,7 +106,15 @@ export default function Register() {
 
     return (
         <section className="h-dvh w-full m-auto text-white relative">
-            <span>{!isPending && !response.isSuccess && < Toast message={response.message} details={response.details ?? ''} status={response.code ?? ''} />}</span>
+            <span>
+                {
+                    !isPending && !response.isSuccess &&
+                    < Toast
+                        message={response.message}
+                        details={response.details ?? ''}
+                        status={response.code ?? ''} />
+                }
+            </span>
             <form action={handleRegister} className="p-4 flex flex-col h-full justify-center gap-4 max-w-200 m-auto">
                 <Input
                     type="text"

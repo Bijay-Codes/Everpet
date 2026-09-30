@@ -94,7 +94,6 @@ const initialFormState = {
 export default function Login() {
     const [response, handleLogin, isPending] = useActionState(login, { isSuccess: null, data: {}, err: {} });
     const [form, dispatch] = useReducer(handleDispatch, initialFormState);
-
     const { toggle, type } = usePasswordToggle();
 
     const navTo = useNavigate();
@@ -105,7 +104,8 @@ export default function Login() {
     const { setUser }: AuthContextType = authContext;
     useEffect(() => {
         if (response.isSuccess) {
-            setUser(response.res.data);
+            setUser(response.data);
+            localStorage.setItem('x-csrf-token', response.data.csrfToken);
             navTo('/dashboard');
         };
     }, [response, setUser, navTo]);
@@ -118,7 +118,7 @@ export default function Login() {
 
                 <Input
                     type='text'
-                    name="Idnetifier"
+                    name="identifier"
                     label="Enter your email or user-name"
                     id="identifier-inp"
                     val={form.inp.identifier}

@@ -8,14 +8,13 @@ export default async function login(_prev: unknown, formInfo: FormData) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                identifier: formInfo.get('identifier-inp'),
-                password: formInfo.get('password-inp')
+                identifier: formInfo.get('identifier'),
+                password: formInfo.get('password')
             })
         });
         if (loginResponse.ok) {
             const parsed = await loginResponse.json();
-            console.log(parsed);
-            return parsed;
+            return parsed.res;
         } else {
             try {
                 const parsed = await loginResponse.json();
