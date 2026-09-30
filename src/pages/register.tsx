@@ -5,6 +5,8 @@ import { AuthContext, type UserData } from "../context/auth-context";
 import Toast from "../components/toasts";
 import register from "../API/fetch-register";
 import usePasswordToggle from "../hooks/usePasswordToggle";
+import { checkForErrors, validateEmail, validatePassword, validateUsername } from "../util/util";
+import Input from "../components/Input";
 
 const initialFormState = {
     inp: {
@@ -59,12 +61,31 @@ function handleDispatch(prev: FormState, action: Actions) {
             return initialFormState;
 
         case ('Validate'):
-            return prev;
-    };
+            switch (action.feild) {
+                case ('password'):
+                    return {
+                        ...prev, err:
+                        {
+                            ...prev.err,
+                            password: validatePassword(prev.inp.password) ?? ''
+                        }
+                    };
+                case ('username'):
+                    return {
+                        ...prev, err: { ...prev.err, username: validateUsername(prev.inp.username) ?? '' }
+                    }
+                case ('email'):
+                    return {
+                        ...prev, err: { ...prev.err, email: validateEmail(prev.inp.email) ?? '' }
+                    }
+                case ('reEnterPass'): {
+                    const isSame = prev.inp.password === prev.inp.reEnterPass;
+                    return { ...prev, err: { ...prev.err, reEnterPass: isSame ? '' : 'The passwords should match' } }
+                }
+            }
+    }
+    // return prev;
 };
-
-
-
 export default function Register() {
     const [response, handleRegister, isPending] = useActionState(register, { isSuccess: null });
     const [form, dispatch] = useReducer(handleDispatch, initialFormState);
@@ -81,61 +102,62 @@ export default function Register() {
         handleResponse(response, setUser, navTo);
     }, [response, setUser, navTo]);
 
-    const inputs = 'bg-card-bg text-white p-4 rounded';
+    // const inputs = 'bg-card-bg text-white p-4 rounded';
 
     return (
         <section className="h-dvh w-full m-auto text-white relative">
             <span>{!isPending && !response.isSuccess && < Toast message={response.message} details={response.details ?? ''} status={response.code ?? ''} />}</span>
             <form action={handleRegister} className="p-4 flex flex-col h-full justify-center gap-4 max-w-200 m-auto">
-                <label htmlFor="username-inp">Enter your user-name</label>
-                <input type="text" name="username-inp" id="username-inp" required
-                    className={inputs} placeholder="user-name" value={form.inp.username}
-                    onChange={(e) =>
-                        dispatch({
-                            type: 'Update',
-                            feild: 'username',
-                            val: e.target.value
-                        })} />
+                <Input
+                    type="text"
+                    name="username"
+                    label="Enter your username"
+                    id="username-inp"
+                    val={form.inp.username}
+                    validationError={form.err.username}
+                    onChange={(e) => dispatch({ type: 'Update', feild: 'username', val: e.target.value })}
+                    onBlur={() => dispatch({ type: 'Validate', feild: 'username' })}
+                />
+                <Input
+                    type="email"
+                    name="email"
+                    label="Enter your E-mail"
+                    id="email-inp"
+                    val={form.inp.email}
+                    validationError={form.err.email}
+                    onChange={(e) => dispatch({ type: 'Update', feild: 'email', val: e.target.value })}
+                    onBlur={() => dispatch({ type: 'Validate', feild: 'email' })}
+                />
+                <Input
+                    type={type}
+                    name="password"
+                    label="Enter your Password"
+                    id="password-inp"
+                    val={form.inp.password}
+                    hasToggle
+                    onToggle={toggle}
+                    validationError={form.err.password}
+                    onChange={(e) => dispatch({ type: 'Update', feild: 'password', val: e.target.value })}
+                    onBlur={() => dispatch({ type: 'Validate', feild: 'password' })}
+                />
 
-                <label htmlFor="email-inp">Enter your Email</label>
-                <input type="email" name="email-inp" id="email-inp" required
-                    className={inputs} placeholder="E-mail" value={form.inp.email}
-                    onChange={(e) =>
-                        dispatch({
-                            type: 'Update',
-                            feild: 'email',
-                            val: e.target.value
-                        })} />
-                <label htmlFor="password-inp">Enter your password</label>
-                <input type='password' name="password-inp" id="password-inp" required
-                    className={inputs} placeholder="Password" value={form.inp.password}
-                    onChange={(e) =>
-                        dispatch({
-                            type: 'Update',
-                            feild: 'password',
-                            val: e.target.value
-                        })} />
-                <label htmlFor="password-inp-2">Enter your password again</label>
-                <input type={type} name="password-inp-2" id="password-inp-2" required
-                    className={inputs} placeholder="Confirm-password" value={form.inp.reEnterPass}
-                    onChange={(e) =>
-                        dispatch({
-                            type: 'Update',
-                            feild: 'reEnterPass',
-                            val: e.target.value
-                        })} />
-                <span onClick={toggle}>{type === 'text' ? 'hide' : 'show'}</span>
                 <div className="flex flex-col gap-4 mt-4">
                     <div className="flex gap-6">
                         <button className="bg-status-danger rounded py-2 px-6" type="button"
                             onClick={() => dispatch({ type: 'Clear' })}>
-                                Clear
+                            Clear
                         </button>
-                        <button className="bg-status-success rounded py-2 px-6">
+                        <button className="bg-status-success rounded py-2 px-6 disabled:bg-gray-400 disabled:text-black"
+                            disabled={isPending || checkForErrors(form.err)}>
                             {isPending ? 'Processing' : 'Register'}
                         </button>
                     </div>
-                    <span>Already have an account? <NavLink to='/login' className='text-highlight hover:bg-highlight hover:text-black py-1 px-2 rounded'>Login instead</NavLink></span>
+
+                    <span>Already have an account?
+                        <NavLink to='/login' className='text-highlight hover:bg-highlight hover:text-black py-1 px-2 rounded'>
+                            Login instead
+                        </NavLink>
+                    </span>
                 </div>
             </form>
         </section>

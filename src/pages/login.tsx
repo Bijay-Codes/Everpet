@@ -4,6 +4,8 @@ import { useNavigate, NavLink } from "react-router-dom";
 import Toast from "../components/toasts";
 import login from "../API/fetch-login";
 import usePasswordToggle from "../hooks/usePasswordToggle";
+import Input from "../components/Input";
+import { checkValidInputData, validatePassword, checkForErrors } from "../util/util";
 /*
 
 What it should do,
@@ -41,8 +43,17 @@ function handleDispatch(prev: FormState, actions: Actions) {
             };
         case ('Clear'):
             return initialFormState;
+        case ('Validate'):
+            switch (actions.feild) {
+                case ('password'):
+                    return {
+                        ...prev,
+                        err: { ...prev.err, password: validatePassword(prev.inp.password) ?? '' }
+                    };
 
-        default: return prev;
+                case ('indentifier'):
+                    return { ...prev, err: { ...prev.err, identifier: checkValidInputData(prev.inp.identifier) ?? '' } };
+            };
     };
 };
 
@@ -79,6 +90,7 @@ const initialFormState = {
     }
 };
 
+
 export default function Login() {
     const [response, handleLogin, isPending] = useActionState(login, { isSuccess: null, data: {}, err: {} });
     const [form, dispatch] = useReducer(handleDispatch, initialFormState);
@@ -101,32 +113,32 @@ export default function Login() {
     return (
         <section className="relative">
             <span>{!isPending && !response.isSuccess && < Toast message={response.message} details={response.details ?? ''} status={response.code ?? ''} />}</span>
-            <form action={handleLogin} className="flex flex-col gap-6 justify-center m-auto
-            h-dvh
+            <form action={handleLogin} className="flex flex-col gap-6 justify-center m-auto h-dvh
             p-4 text-white max-w-200">
-                <div className="flex flex-col gap-2">
-                    <label htmlFor="identifier-login">Identifier - enter your email or username</label>
-                    <input type="text" name="identifier-inp" placeholder="username / email"
-                        className="p-2 rounded bg-card-bg"
-                        value={form.inp.identifier}
-                        onChange={(e) =>
-                            dispatch({
-                                type: 'Update',
-                                feild: 'identifier',
-                                val: e.target.value
-                            })} />
-                </div>
-                <div className="flex flex-col gap-2">
-                    <label htmlFor="identifier-login">Enter your Password</label>
-                    <input type={type} placeholder="password" name='password-inp'
-                        className="p-2 rounded bg-card-bg" value={form.inp.password}
-                        onChange={(e) => dispatch({
-                            type: 'Update',
-                            feild: 'password',
-                            val: e.target.value
-                        })} />
-                    <span onClick={toggle}>show</span>
-                </div>
+
+                <Input
+                    type='text'
+                    name="Idnetifier"
+                    label="Enter your email or user-name"
+                    id="identifier-inp"
+                    val={form.inp.identifier}
+                    validationError={form.err.identifier}
+                    onChange={(e) => dispatch({ type: 'Update', feild: 'identifier', val: e.target.value })}
+                    onBlur={() => dispatch({ type: 'Validate', feild: 'indentifier' })}
+                />
+
+                <Input
+                    type={type}
+                    name="password"
+                    label="Enter your Password"
+                    id="password-inp"
+                    val={form.inp.password}
+                    hasToggle
+                    onToggle={toggle}
+                    validationError={form.err.password}
+                    onChange={(e) => dispatch({ type: 'Update', feild: 'password', val: e.target.value })}
+                    onBlur={() => dispatch({ type: 'Validate', feild: 'password' })}
+                />
 
                 <div className="flex flex-col gap-4">
                     <div className="flex gap-6">
@@ -134,11 +146,12 @@ export default function Login() {
                             type="reset" onClick={() => dispatch({ type: 'Clear' })} className="bg-status-danger py-2 px-6 rounded">
                             Clear
                         </button>
-                        <button disabled={isPending}
-                            className="bg-status-success py-2 px-6 rounded">
+                        <button disabled={isPending || checkForErrors(form.err)}
+                            className="bg-status-success py-2 px-6 rounded disabled:bg-gray-400 disabled:text-black">
                             {isPending ? 'Processing' : 'Login'}
                         </button>
                     </div>
+
                     <span>Dont have an account? <NavLink to='/register' className='text-highlight hover:bg-highlight hover:text-black py-1 px-2 rounded'>Register now!</NavLink></span>
                 </div>
             </form>
