@@ -5,7 +5,7 @@ import Register from "./pages/register";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
 import ShowOffline from "./components/show-offline";
-
+import HandleRedirect from "./components/handle-redirect";
 
 function App() {
   return (
@@ -17,8 +17,9 @@ function App() {
             <Route path="/" element={<WelcomeScreen />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route element={<HandleRedirect />} >
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
           </Routes>
         </section>
       </BrowserRouter>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export default function useOnline() {
-    const [network, setNetwork] = useState<'online' | 'offline' | null>(null);
+    const [network, setNetwork] = useState<'online' | 'offline' | null>(window.navigator.onLine ? 'online' : 'offline');
     useEffect(() => {
         const handleOffline = () => {
             setNetwork('offline');

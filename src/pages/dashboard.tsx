@@ -1,5 +1,4 @@
 import { useContext } from "react"
-import { Navigate } from "react-router-dom";
 import { AuthContext, type AuthContextType } from "../context/auth-context"
 
 
@@ -7,7 +6,7 @@ export default function Dashboard() {
     const user: AuthContextType | null = useContext(AuthContext);
 
     if (!user || !user.isLoggedIn) {
-        return <Navigate to='/' replace />;
+        throw new Error('Auth context data could not be accessed');
     };
     return (
         <section className="text-white">
