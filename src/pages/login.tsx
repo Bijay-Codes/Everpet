@@ -4,7 +4,7 @@ import { useNavigate, NavLink } from "react-router-dom";
 import Toast from "../components/toasts";
 import login from "../API/fetch-login";
 import usePasswordToggle from "../hooks/usePasswordToggle";
-import Input from "../components/Input";
+import Input from "../components/input";
 import { checkValidInputData, validatePassword, checkForErrors } from "../util/util";
 /*
 

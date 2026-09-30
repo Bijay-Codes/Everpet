@@ -16,7 +16,7 @@ export default function Input({
     onChange, onBlur, hasToggle = false, onToggle,
 }: InputProps) {
     return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2">
             <label htmlFor={id}>{label}</label>
             <div className="relative">
                 <input
@@ -39,7 +39,7 @@ export default function Input({
                     </button>
                 )}
             </div>
-            <span>{validationError}</span>
+            <span className="text-sm text-status-danger">{validationError}</span>
         </div>
     );
 }

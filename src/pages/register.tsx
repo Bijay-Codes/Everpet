@@ -6,7 +6,7 @@ import Toast from "../components/toasts";
 import register from "../API/fetch-register";
 import usePasswordToggle from "../hooks/usePasswordToggle";
 import { checkForErrors, validateEmail, validatePassword, validateUsername } from "../util/util";
-import Input from "../components/Input";
+import Input from "../components/input";
 
 const initialFormState = {
     inp: {

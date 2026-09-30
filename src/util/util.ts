@@ -8,12 +8,11 @@ export function getFromLocalStorage(name: string) {
 
 
 export function validatePassword(password: string) {
-    if (!password)
-        return 'Enter an valid password using atleaset 1 upper-case letter, 1 lowercase letter and an special character (-#@!$ etc)';
+    const checkInvalidMessage = checkValidInputData(password);
+    if (checkInvalidMessage)
+        return checkInvalidMessage;
 
     const trimmed = password.trim();
-    if (!trimmed)
-        return 'Enter an valid password using atleaset 1 upper-case letter, 1 lowercase letter and an special character (-#@!$ etc)';
 
     const lengthRegex = /^.{8,64}/;
     if (!lengthRegex.test(trimmed)) {
@@ -37,18 +36,23 @@ export function validatePassword(password: string) {
 };
 
 export function validateUsername(username: string) {
-    if (username.length >= 30) {
+    const checkInvalidMessage = checkValidInputData(username);
+    if (checkInvalidMessage)
+        return checkInvalidMessage;
+
+    const trimmed = username.trim();
+    if (trimmed.length >= 30) {
         return 'Username must be less than 30 characters';
     };
     return null;
 };
 
 export function validateEmail(email: string) {
-    if (!email)
-        return 'Invalid email provided';
+    const checkInvalidMessage = checkValidInputData(email);
+    if (checkInvalidMessage)
+        return checkInvalidMessage;
+
     const trimmed = email.trim();
-    if (!trimmed)
-        return 'Invalid email provided';
     if (trimmed.length >= 255)
         return 'Email must be less than 255 characters';
     const emailRegex = /^[a-zA-Z0-9]+([._%+-][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/;
@@ -59,10 +63,10 @@ export function validateEmail(email: string) {
 
 export function checkValidInputData(data: string) {
     if (!data)
-        return 'Enter valid data';
+        return 'Enter valid data to continue';
     const trimmed = data.trim();
     if (!trimmed)
-        return 'Enter valid data';
+        return 'Enter valid data continue';
     return null;
 }
 

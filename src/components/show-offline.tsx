@@ -7,7 +7,10 @@ export default function ShowOffline() {
         <>{
             networkStatus === 'offline'
             &&
-            <span className="bg-status-danger px-6 py-4 inline-flex justify-center items-center rounded absolute right-0">Please check your internet connection</span>
+            <span
+                className="bg-status-danger text-sm rounded-bl-lg px-6 py-4 inline-flex justify-center items-center absolute right-0">
+                You're offline. Check your internet connection.
+            </span>
         }
         </>
     )
