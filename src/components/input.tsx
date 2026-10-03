@@ -6,7 +6,7 @@ type InputProps = {
     val: string;
     validationError?: string;
     onChange: React.ChangeEventHandler<HTMLInputElement>;
-    onBlur: React.FocusEventHandler<HTMLInputElement>;
+    onBlur?: React.FocusEventHandler<HTMLInputElement>;
     hasToggle?: boolean;
     onToggle?: () => void;
 };
