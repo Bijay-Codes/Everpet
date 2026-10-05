@@ -27,7 +27,8 @@ export default function Input({
                     onChange={onChange}
                     onBlur={onBlur}
                     required
-                    className="bg-card-bg text-white p-4 rounded w-full"
+                    placeholder={name}
+                    className="bg-card-bg text-white px-4 py-2 rounded w-full"
                 />
                 {hasToggle && (
                     <button
