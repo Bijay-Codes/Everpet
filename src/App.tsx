@@ -9,29 +9,32 @@ import HandleRedirect from "./components/handle-redirect";
 import ProtectedNav from "./components/handle-navbar";
 import PetStore from "./pages/protected/pet-store";
 import Pets from "./pages/protected/pets";
+import PetsProvider from "./context/pets-provider";
 
 function App() {
   return (
     <AuthContextProvider >
-      <BrowserRouter>
-        <section className="bg-dark-bg w-full h-screen relative">
-          <ShowOffline />
-          <Routes>
-            <Route path="/" element={<WelcomeScreen />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
+      <PetsProvider>
+        <BrowserRouter>
+          <section className="bg-dark-bg w-full h-screen relative">
+            <ShowOffline />
+            <Routes>
+              <Route path="/" element={<WelcomeScreen />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
 
-            {/* Protected routes (redirect to / when not logged in) */}
-            <Route element={<HandleRedirect />} >
-              <Route element={<ProtectedNav />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/pet-store" element={<PetStore />} />
-                <Route path="/pets" element={<Pets />} />
+              {/* Protected routes (redirect to / when not logged in) */}
+              <Route element={<HandleRedirect />} >
+                <Route element={<ProtectedNav />}>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/pet-store" element={<PetStore />} />
+                  <Route path="/pets" element={<Pets />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
-        </section>
-      </BrowserRouter>
+            </Routes>
+          </section>
+        </BrowserRouter>
+      </PetsProvider>
     </AuthContextProvider>
   );
 };
