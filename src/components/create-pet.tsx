@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, type SetStateAction } from "react";
+import { useCallback, useContext, useEffect, useState, type SetStateAction } from "react";
 import Input from "./input";
 import fetchSpeciesCreatable from "../API/fetch-creatable-species";
 import type { SpeciesObj } from "../types/species-obj";
@@ -9,74 +9,35 @@ import type { PetData } from "../types/pets-context";
 import PetContext from "../context/pets-context";
 import type { ErrorResponse } from "../types/auth-responses";
 
-function handleResponse(
-    response: PetData | ErrorResponse | null,
-    setPetsList: React.Dispatch<SetStateAction<PetData[]>>,
-    hasError: boolean,
-    setErrorResponse: React.Dispatch<SetStateAction<ErrorResponse | null>>) {
-    if (!response) return;
-    if (hasError) {
-        setErrorResponse(response as ErrorResponse);
-    } else {
-        setErrorResponse(null);
-        setPetsList(prev => [...prev, response as PetData]);
-    };
-};
 
-function checkFeilds(
-    name: string | null,
-    selectedSpecies: SpeciesObj | null,
-    species: SpeciesObj[],
-    accessToken: string
-) {
-    if (!name || !selectedSpecies || species.length <= 0) {
-        return null;
-    }
-
-    if (name.length > 40 || !selectedSpecies.name)
-        return null;
-
-    const obj = {
-        name,
-        species: selectedSpecies.name,
-        accessToken
-    };
-
-    return fetchCreatePet(obj);
-};
+type Name = string;
+type SpeciesList = SpeciesObj[];
+type SelectedSpecies = SpeciesObj | null;
+type ErrorState = ErrorResponse | null;
+type SetStateSelectedSpecies = React.Dispatch<SetStateAction<SpeciesObj | null>>
 
 export default function CreatePetSection() {
 
-    const [name, setName] = useState('');
-    const [species, setSpecies] = useState<SpeciesObj[]>([]);
-    const [selectedSpecies, setSelected] = useState<SpeciesObj | null>(null);
+    const [name, setName] = useState<Name>('');
+    const [species, setSpecies] = useState<SpeciesList>([]);
+    const [selectedSpecies, setSelected] = useState<SelectedSpecies>(null);
 
-    const petContext = useContext(PetContext);
 
-    const [errorResponse, setErrorResponse] = useState<ErrorResponse | null>(null);
+    const [errorResponse, setErrorResponse] = useState<ErrorState>(null);
     console.log(errorResponse);
-    if (!petContext)
-        throw new Error('Pet context not set up or not providing the required value');
 
-    const { pets, setPetsList } = petContext;
-    if (!setPetsList || !pets)
-        throw new Error('Pet function OR Value from pet context could not be found or accessed');
-
-    const accessToken = useContext(AuthContext)?.userInfo?.accessToken;
-    if (!accessToken)
-        throw new Error('Auth context not set up or not providing the required value');
+    const { pets, setPetsList, accessToken } = useGetContextValues();
 
     const { response, isPending, fetch, hasError, reset } =
         useHandleFetch(() =>
-            checkFeilds(name, selectedSpecies, species, accessToken));
-
+            checkFeilds(name, selectedSpecies?.name, accessToken));
 
     console.log(response)
     useEffect(() => {
         async function handleSpecies() {
             const data = await fetchSpeciesCreatable(accessToken ?? '');
             setSpecies(data);
-            setSelected(data[0] ?? null);
+            setSelected(data[0].name ?? null);
         };
         handleSpecies();
     }, [accessToken]);
@@ -105,7 +66,7 @@ export default function CreatePetSection() {
                 </div>
             </section>
             <section>
-                <SpeciesList species={species} selectedSpecies={selectedSpecies} setSelected={setSelected} />
+                <SpeciesPane species={species} setSelected={setSelected} />
                 {selectedSpecies &&
                     <SpeciesSelected selectedSpecies={selectedSpecies} />
                 }
@@ -126,34 +87,37 @@ export default function CreatePetSection() {
                     )}
                 </div>
             )}
+
         </main >
     );
 };
 
 
-function SpeciesList({ species, selectedSpecies, setSelected }: { species: SpeciesObj[], selectedSpecies: SpeciesObj | null, setSelected: React.Dispatch<SetStateAction<SpeciesObj | null>> }) {
-    return (
-        <div className="flex gap-4 max-w-200 flex-wrap">
-            {
-                species.length > 0 && (
-                    species.map(anim =>
-                        <div key={anim.name}>
-                            <div onClick={() => setSelected(anim)}
-                                className={`py-1 px-4 rounded
-                     ${selectedSpecies?.name === anim.name ? 'bg-accent-bg/20 outline outline-accent-bg' : 'bg-card-bg'}`}>
-                                <span className="capitalize" >{anim.name}</span>
-                            </div>
+// function SpeciesList({ species, selectedSpecies, setSelected }: { species: SpeciesList, selectedSpecies: SelectedSpecies, setSelected: SetStateSelectedSpecies }) {
 
-                        </div>
-                    )
-                )
-            }
-        </div>
-    )
-};
+//     return (
+//         <div className="flex gap-4 max-w-200 flex-wrap">
+//             {
+//                 species.length > 0 && (
+//                     species.map(anim =>
+//                         <div key={anim.name}>
+//                             <div onClick={() => setSelected(anim.name)}
+//                                 className={`py-1 px-4 rounded
+//                      ${selectedSpecies === anim.name ? 'bg-accent-bg/20 outline outline-accent-bg' : 'bg-card-bg'}`}>
+//                                 <span className="capitalize" >{anim.name}</span>
+//                             </div>
+
+//                         </div>
+//                     )
+//                 )
+//             }
+//         </div>
+//     )
+// };
 
 
-function SpeciesSelected({ selectedSpecies }: { selectedSpecies: SpeciesObj }) {
+function SpeciesSelected({ selectedSpecies }: { selectedSpecies: SelectedSpecies }) {
+
     return (
         <article className="bg-card-bg px-6 py-4 max-w-100 rounded outline outline-amber-200/40 mt-6">
             {selectedSpecies &&
@@ -260,5 +224,99 @@ function Pet({ pet }: { pet: PetData }) {
                 <button className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg">Pet</button>
             </section>
         </div>
+    );
+};
+
+function handleResponse(
+    response: PetData | ErrorResponse | null,
+    setPetsList: React.Dispatch<SetStateAction<PetData[]>>,
+    hasError: boolean,
+    setErrorResponse: React.Dispatch<SetStateAction<ErrorResponse | null>>) {
+    if (!response) return;
+    if (hasError) {
+        setErrorResponse(response as ErrorResponse);
+    } else {
+        setErrorResponse(null);
+        setPetsList(prev => [...prev, response as PetData]);
+    };
+};
+
+function checkFeilds(
+    name: string | null,
+    species: string | undefined,
+    accessToken: string
+) {
+    if (!name || !species) {
+        return null;
+    }
+
+    if (name.length > 40 || !species)
+        return null;
+
+    const obj = {
+        name,
+        species: species,
+        accessToken
+    };
+
+    return fetchCreatePet(obj);
+};
+
+function useGetContextValues() {
+    const petContext = useContext(PetContext);
+    if (!petContext)
+        throw new Error('Pet context not set up or not providing the required value');
+
+    const { pets, setPetsList } = petContext;
+    if (!setPetsList || !pets)
+        throw new Error('Pet function OR Value from pet context could not be found or accessed');
+
+    const accessToken = useContext(AuthContext)?.userInfo?.accessToken;
+    if (!accessToken)
+        throw new Error('Auth context not set up or not providing the required value');
+
+    return { pets, setPetsList, accessToken }
+}
+
+function SpeciesPane({ species, setSelected }: { species: SpeciesList, setSelected: SetStateSelectedSpecies }) {
+    const [index, setIndex] = useState<number>(0);
+    const setSele = useCallback((anim: SpeciesObj) => {
+        setSelected(anim);
+    }, [setSelected]);
+
+    const change = (type: 'nxt' | 'prev') => {
+        if (!species) return;
+        if (type === 'nxt') {
+            if (!species[index])
+                setIndex(0);
+            return setIndex((prev: number) => prev >= species.length - 1 ? 0 : prev + 1);
+        } else {
+            if (!species[index])
+                setIndex(species.length);
+            return setIndex((prev: number) => prev <= 0 ? species.length - 1 : prev - 1);
+        }
+    }
+
+    useEffect(() => {
+        setSele(species[index]);
+    }, [index, species, setSele]);
+
+    return (
+        <section className="flex gap-6 min-w-30">
+            <button
+                onClick={() => change('prev')}
+                className="w-10 h-10 bg-card-bg rounded">&lt;</button>
+            <div
+                className="flex-1 inline-flex items-center justify-center 
+                rounded w-full
+              bg-card-bg outline outline-accent-bg outline-offset-2">
+                <span
+                    className="capitalize font-extrabold">
+                    {species[index].name}
+                </span>
+            </div>
+            <button onClick={() => change('nxt')}
+                className="w-10 h-10 bg-card-bg rounded">&gt;</button>
+        </section>
     );
 };

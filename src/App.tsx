@@ -16,7 +16,7 @@ function App() {
     <AuthContextProvider >
       <PetsProvider>
         <BrowserRouter>
-          <section className="bg-dark-bg w-full h-screen relative">
+          <section className="bg-dark-page w-full h-screen relative">
             <ShowOffline />
             <Routes>
               <Route path="/" element={<WelcomeScreen />} />
