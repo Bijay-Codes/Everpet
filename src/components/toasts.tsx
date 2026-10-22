@@ -1,19 +1,44 @@
 import { useState, useEffect } from "react";
-export default function Toast({ message, details, status }: { message: string, details?: string, status?: number | '' }) {
-    const [isVisible, setVisible] = useState(true);
+import type { ErrorResponse } from "../types/auth-responses";
 
+export default function Toast({ type, seconds = 4, errorResponse }: {
+    type: 'success' | 'warn' | 'err' | 'info',
+    seconds: number,
+    errorResponse: ErrorResponse
+}) {
+    const [isVisible, setVisible] = useState(true);
+    const { message, code, details } = errorResponse;
     useEffect(() => {
         setTimeout(() => {
             setVisible(false);
-        }, 3000);
-    }, []);
-
+        }, (seconds * 1000));
+    }, [seconds]);
+    const styles = {
+        err: {
+            box: 'bg-status-danger',
+        },
+        info: {
+            box: 'bg-status-info'
+        },
+        success: {
+            box: 'bg-status-success'
+        },
+        warn: {
+            box: 'bg-status-warn'
+        }
+    };
     return (
         <section>
-            {message && isVisible && <div className="absolute top-0 right-0 bg-status-danger min-h-20 min-w-40 p-2">
+            {message && isVisible && <div className={`absolute top-0 right-0 min-h-20 min-w-40 p-2
+                ${styles[type].box}`}>
                 <div className="flex gap-1 items-center">
-                    <span className="text-2xl font-extrabold">Error</span>
-                    {status && <span className="text-4xl text-highlight">{status}</span>}
+                    <span className="text-2xl">
+                        {type == 'err' ? 'Error'
+                            : type == 'success' ? 'Success'
+                                : type == 'info' ? 'Notice'
+                                    : 'Warning'}</span>
+
+                    {code && <span className="text-4xl font-extrabold">{code}</span>}
                 </div>
                 <h1>{message}</h1>
                 {details && <h2>{details}</h2>}

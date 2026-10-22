@@ -7,6 +7,7 @@ export const END_POINTS = {
     register: `${import.meta.env.VITE_API_URL}/auth/register`,
     refresh: `${import.meta.env.VITE_API_URL}/auth/refresh`,
     createPet: `${import.meta.env.VITE_API_URL}/petstore/createpet`,
+    allUserPets: `${import.meta.env.VITE_API_URL}/petstore/pets`,
     getCreatableSpecies: `${import.meta.env.VITE_API_URL}/petstore/species`
 
 } as const;

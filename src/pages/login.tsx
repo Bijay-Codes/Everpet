@@ -6,6 +6,7 @@ import login from "../API/fetch-login";
 import usePasswordToggle from "../hooks/usePasswordToggle";
 import Input from "../components/input";
 import { checkValidInputData, validatePassword, checkForErrors } from "../util/util";
+import type { ErrorResponse } from "../types/auth-responses";
 /*
 
 What it should do,
@@ -110,9 +111,11 @@ export default function Login() {
         };
     }, [response, setUser, navTo]);
 
+    const errorResponse = response as ErrorResponse;
+
     return (
         <section className="relative">
-            <span>{!isPending && !response.isSuccess && < Toast message={response.message} details={response.details ?? ''} status={response.code ?? ''} />}</span>
+            <span>{!isPending && !response.isSuccess && < Toast type="err" dur={4} errorResponse={errorResponse} />}</span>
             <form action={handleLogin} className="flex flex-col gap-6 justify-center m-auto h-dvh
             p-4 text-white max-w-200">
 

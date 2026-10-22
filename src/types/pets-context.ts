@@ -8,9 +8,15 @@ export type PetsContext = {
 
 export type DietType = "carnivore" | "herbivore" | "omnivore";
 
-export type PetResponse = {
+export type SinglePetResponse = {
     isSuccess: boolean;
     data: PetData | null | undefined;
+    err?: ErrorResponse;
+};
+
+export type MultiPetResponse = {
+    isSuccess: boolean;
+    data: PetData[] | null | undefined;
     err?: ErrorResponse;
 };
 

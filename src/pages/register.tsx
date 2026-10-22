@@ -1,5 +1,5 @@
 import { useActionState, useContext, useEffect, useReducer, type SetStateAction } from "react"
-import type { ServerResponse } from "../types/auth-responses";
+import type { ErrorResponse, ServerResponse } from "../types/auth-responses";
 import { useNavigate, NavLink, type NavigateFunction } from "react-router-dom";
 import { AuthContext, type UserData } from "../context/auth-context";
 import Toast from "../components/toasts";
@@ -103,16 +103,17 @@ export default function Register() {
     }, [response, setUser, navTo]);
 
     // const inputs = 'bg-card-bg text-white p-4 rounded';
-
+    const errorResponse = response as ErrorResponse;
     return (
         <section className="h-dvh w-full m-auto text-white relative">
             <span>
                 {
                     !isPending && !response.isSuccess &&
                     < Toast
-                        message={response.message}
-                        details={response.details ?? ''}
-                        status={response.code ?? ''} />
+                        type="err"
+                        dur={4}
+                        errorResponse={errorResponse}
+                    />
                 }
             </span>
             <form action={handleRegister} className="p-4 flex flex-col h-full justify-center gap-4 max-w-200 m-auto">

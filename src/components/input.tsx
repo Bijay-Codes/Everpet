@@ -4,6 +4,7 @@ type InputProps = {
     label: string;
     id: string;
     val: string;
+    hasLimit?: number
     validationError?: string;
     onChange: React.ChangeEventHandler<HTMLInputElement>;
     onBlur?: React.FocusEventHandler<HTMLInputElement>;
@@ -12,7 +13,7 @@ type InputProps = {
 };
 
 export default function Input({
-    type, name, label, id, val, validationError,
+    type, name, label, id, val, hasLimit, validationError,
     onChange, onBlur, hasToggle = false, onToggle,
 }: InputProps) {
     return (
@@ -28,7 +29,9 @@ export default function Input({
                     onBlur={onBlur}
                     required
                     placeholder={name}
-                    className="bg-card-bg text-white px-4 py-2 rounded w-full"
+                    maxLength={hasLimit}
+                    className="bg-card-bg text-white px-4 py-2 rounded w-full 
+                    focus:outline-none focus:bg-accent-bg "
                 />
                 {hasToggle && (
                     <button
