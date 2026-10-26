@@ -1,7 +1,11 @@
-export type SpeciesObj = {
+export type DietType = "carnivore" | "herbivore" | "omnivore";
+export interface SpeciesObj {
     name: string;
-    diet: 'Carnivore' | 'Herbivore' | 'Omnivore';
-    bondDecay: number;
-    stressIncrease: number;
-    lifespan: number;
+    lifespanDays: number;
+    diet: DietType;
+    caloriesNeeded: number;
+    bondDecayPerTick: number;      // higher = loses bond faster, less "loyal"
+    metabolicRatePerTick: number;  // higher = burns appetite faster
+    stressIncreasePerTick: number;
+    stressDecreasePetTick: number
 };

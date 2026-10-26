@@ -8,17 +8,5 @@ export default async function fetchSpeciesCreatable(accessToken: string) {
             'Content-Type': 'application/json'
         }
     });
-    try {
-        if (!response.ok)
-            return { isSuccess: false, err: 'Something went wrong' };
-        const parsed = await response.json();
-
-        if (parsed.isSuccess) {
-            return parsed.res;
-        } else {
-            return { isSuccess: false, err: parsed.err };
-        };
-    } catch {
-        return { isSuccess: false, err: 'Something went wrong' };
-    };
+    return response;
 };

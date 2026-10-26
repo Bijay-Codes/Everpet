@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode, type SetStateAction } from "react"
 import petsContext from "./pets-context"
-import type { MultiPetResponse, PetData, PetsContext } from "../types/pets-context";
+import type { PetData, PetsContext } from "../types/pets-context";
 import useHandleFetch from "../hooks/useHandleFetch";
 import fetchAllPets from "../API/fetch-all-user-pets";
 import { AuthContext } from "./auth-context";
@@ -32,24 +32,22 @@ export default function PetsProvider({ children }: { children: ReactNode }) {
     }, [runFetch]);
 
     useEffect(() => {
-        const res = response as MultiPetResponse;
+        const res = response as PetData[];
         if (isPending || !res)
             return;
-
+        // console.log('not pending and response is there')
         if (hasError)
             return resetResponseAfter(durationSeconds, reset);
-
-        const petsList = res.data;
+        // console.log('No Error')
+        const petsList = res;
         if (petsList?.length)
             updatePetsList(offset, petsList, setPetsList);
-
+        // console.log('this is the list / proof', petsList);
         reset();
     }, [response, isPending, hasError, reset]);
-
     const values = useMemo(() => {
         return ({ pets, setPetsList });
     }, [pets]);
-
     return (
         <petsContext.Provider value={values}>
             {children}
@@ -68,6 +66,7 @@ export default function PetsProvider({ children }: { children: ReactNode }) {
 function updatePetsList(offset: React.RefObject<number>, list: PetData[], setList: React.Dispatch<SetStateAction<PetData[]>>) {
     setList(prev => [...prev, ...list]);
     offset.current += list.length;
+    // console.log('i do get updated')
 };
 
 function resetResponseAfter(durationSeconds: number, reset: () => void) {
