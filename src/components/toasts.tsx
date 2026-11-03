@@ -14,23 +14,15 @@ export default function Toast({ type, seconds = 4, errorResponse }: {
         }, (seconds * 1000));
     }, [seconds]);
     const styles = {
-        err: {
-            box: 'bg-status-danger',
-        },
-        info: {
-            box: 'bg-status-info'
-        },
-        success: {
-            box: 'bg-status-success'
-        },
-        warn: {
-            box: 'bg-status-warn'
-        }
+        err: 'bg-danger-color text-danger-fg',
+        info: 'bg-blue-400 text-white',
+        success: 'bg-success-color text-success-fg',
+        warn: 'bg-warning-color text-warning-fg'
     };
     return (
         <section>
             {message && isVisible && <div className={`absolute top-0 right-0 min-h-20 min-w-40 p-2
-                ${styles[type].box}`}>
+                ${styles[type]}`}>
                 <div className="flex gap-1 items-center">
                     <span className="text-2xl">
                         {type == 'err' ? 'Error'

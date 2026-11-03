@@ -10,7 +10,7 @@ export default function Dashboard() {
     };
     return (
         <section className="px-6 py-4">
-            <div className="text-white text-center text-3xl">
+            <div className="text-page-fg bg-page-bg text-center text-3xl">
                 <div >Welcome back : {user.userInfo?.username}</div>
                 <span className="text-xl">Lets go on a ride</span>
             </div>

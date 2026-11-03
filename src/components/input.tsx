@@ -17,7 +17,7 @@ export default function Input({
     onChange, onBlur, hasToggle = false, onToggle,
 }: InputProps) {
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 text-page-fg">
             <label htmlFor={id}>{label}</label>
             <div className="relative">
                 <input
@@ -30,8 +30,8 @@ export default function Input({
                     required
                     placeholder={name}
                     maxLength={hasLimit}
-                    className="bg-card-bg text-white px-4 py-2 rounded w-full 
-                    focus:outline-none focus:bg-accent-bg "
+                    className="bg-surface-bg/80 text-surface-fg px-4 py-2 rounded w-full 
+                    outline outline-accent-bg focus:bg-surface-bg focus:text-surface-fg"
                 />
                 {hasToggle && (
                     <button
@@ -43,7 +43,7 @@ export default function Input({
                     </button>
                 )}
             </div>
-            <span className="text-sm text-status-danger">{validationError}</span>
+            <span className="text-sm text-danger-color">{validationError}</span>
         </div>
     );
 }

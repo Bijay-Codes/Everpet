@@ -1,27 +1,14 @@
 import { END_POINTS } from "./api-endpoints";
-type PetData = {
-    name: string;
-    species:string;
-    
-}
-export default async function postNewPet(accessToken: string, petData: PetData) {
-    const response = await fetch(END_POINTS.createPet, {
-        method: 'POST',
+
+export default async function fetchStorePets(accessToken: string, offset: number, limit: number = 20) {
+    const url = END_POINTS.storePets + `${offset}` + `/${limit}`;
+    const response = await fetch(url, {
+        method: 'GET',
         credentials: 'include',
         headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(petData)
-    });
-    try {
-        const parsed = await response.json();
-        if (response.ok) {
-            return parsed.res;
-        } else {
-            return { isSuccess: false, err: parsed.err };
         }
-    } catch {
-        return { isSuccess: false, message: 'Something went wrong' };
-    }
+    });
+    return response;
 };

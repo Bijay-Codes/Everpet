@@ -1,13 +1,15 @@
+import fetchAbandonPet from "../API/fetch-abandon-pet";
 import type { PetData } from "../types/pets-context";
-export default function Pet({ pet }: { pet: PetData }) {
+export default function Pet({ pet, accessToken }: { pet: PetData, accessToken: string }) {
     const { name, char, state, stats
     } = pet;
     const { species, lifespan, sicknessStartedAt, diet } = char;
     const { isSick, isDead, isHealing, isHungry } = state;
     const { sicknessLiftAt, caloriesConsumed, caloriesNeeded, bond, stress, appetite, daysUnderfed, hp, maxHp } = stats;
 
-    const header = 'text-3xl font-extrabold'
-    const subtext = 'text-lg font-medium inline-flex items-center'
+    const header = 'text-3xl font-extrabold';
+    const subtext = 'text-lg font-medium inline-flex items-center';
+
     return (
         <div className="bg-card-bg p-6 flex flex-col gap-6 min-w-50">
             {/* basic info section */}
@@ -77,9 +79,18 @@ export default function Pet({ pet }: { pet: PetData }) {
                 </div>
             </section>
             <section className="flex gap-4">
-                <button className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg">Feed</button>
-                <button className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg">Interact</button>
-                <button className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg">Pet</button>
+                <button
+                    className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
+                >Feed
+                </button>
+                <button
+                    className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg">Interact
+                </button>
+                <button
+                    className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
+                    onClick={() => fetchAbandonPet(pet.id, accessToken)}>
+                    Abandon
+                </button>
             </section>
         </div>
     );

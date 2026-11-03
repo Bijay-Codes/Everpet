@@ -105,13 +105,13 @@ export default function Register() {
     // const inputs = 'bg-card-bg text-white p-4 rounded';
     const errorResponse = response as ErrorResponse;
     return (
-        <section className="h-dvh w-full m-auto text-white relative">
+        <section className="h-dvh w-full m-auto relative">
             <span>
                 {
                     !isPending && !response.isSuccess &&
                     < Toast
                         type="err"
-                        dur={4}
+                        seconds={4}
                         errorResponse={errorResponse}
                     />
                 }
@@ -152,18 +152,18 @@ export default function Register() {
 
                 <div className="flex flex-col gap-4 mt-4">
                     <div className="flex gap-6">
-                        <button className="bg-status-danger rounded py-2 px-6" type="button"
+                        <button className="bg-danger-color text-danger-fg rounded py-2 px-6" type="button"
                             onClick={() => dispatch({ type: 'Clear' })}>
                             Clear
                         </button>
-                        <button className="bg-status-success rounded py-2 px-6 disabled:bg-gray-400 disabled:text-black"
+                        <button className="bg-accent-bg text-accent-fg rounded py-2 px-6 disabled:bg-surface-muted-bg disabled:text-surface-muted-fg"
                             disabled={isPending || checkForErrors(form.err)}>
                             {isPending ? 'Processing' : 'Register'}
                         </button>
                     </div>
 
                     <span>Already have an account?
-                        <NavLink to='/login' className='text-highlight hover:bg-highlight hover:text-black py-1 px-2 rounded'>
+                        <NavLink to='/login' className='text-highlight hover:bg-primary-bg hover:text-primary-fg py-1 px-2 rounded'>
                             Login instead
                         </NavLink>
                     </span>

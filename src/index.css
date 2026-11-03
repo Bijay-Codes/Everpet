@@ -1,14 +1,45 @@
 @import 'tailwindcss';
 
 @theme {
-    --color-dark-page: #0F172A;
-    --color-card-bg: #1E293B;
-    --color-status-danger: #F43F5E;
-    --color-status-info: #0EA5E9;
-    --color-status-success: #10B981;
-    --color-status-warn: #F59E0B;
-    --color-accent-bg: #5B50E6;
-    --color-highlight: #FFF;
+    --color-page-bg: oklch(0.98 0.005 255);
+    --color-page-fg: oklch(0.18 0.02 255);
+    --color-surface-bg: oklch(0.99 0.002 255);
+    --color-surface-fg: oklch(0.20 0.02 255);
+    --color-surface-muted-bg: oklch(0.94 0.01 255);
+    --color-surface-muted-fg: oklch(0.40 0.02 255);
+    --color-primary-bg: oklch(0.45 0.12 255);
+    --color-primary-fg: oklch(0.99 0.0 0);
+    --color-secondary-bg: oklch(0.92 0.03 255);
+    --color-secondary-fg: oklch(0.25 0.06 255);
+    --color-accent-bg: oklch(0.25 0.08 255);
+    --color-accent-fg: oklch(0.99 0.0 0);
+    --color-success-color: oklch(0.50 0.14 150);
+    --color-success-fg: oklch(0.99 0.0 0);
+    --color-warning-color: oklch(0.55 0.16 55);
+    --color-warning-fg: oklch(0.99 0.0 0);
+    --color-danger-color: oklch(0.49 0.19 25);
+    --color-danger-fg: oklch(0.99 0.0 0);
+}
+
+.dark {
+    --page-bg: oklch(0.14 0.01 255);
+    --page-fg: oklch(0.90 0.01 255);
+    --surface-bg: oklch(0.18 0.015 255);
+    --surface-fg: oklch(0.85 0.015 255);
+    --surface-muted-bg: oklch(0.24 0.02 255);
+    --surface-muted-fg: oklch(0.65 0.02 255);
+    --primary-bg: oklch(0.65 0.14 255);
+    --primary-fg: oklch(0.15 0.03 255);
+    --secondary-bg: oklch(0.28 0.04 255);
+    --secondary-fg: oklch(0.85 0.04 255);
+    --accent-bg: oklch(0.85 0.08 255);
+    --accent-fg: oklch(0.15 0.03 255);
+    --success-color: oklch(0.63 0.15 150);
+    --success-fg: oklch(0.18 0.0 0);
+    --warning-color: oklch(0.66 0.17 55);
+    --warning-fg: oklch(0.18 0.0 0);
+    --danger-color: oklch(0.55 0.19 25);
+    --danger-fg: oklch(0.99 0.0 0);
 }
 
 /* * {

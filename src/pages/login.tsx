@@ -115,7 +115,7 @@ export default function Login() {
 
     return (
         <section className="relative">
-            <span>{!isPending && !response.isSuccess && < Toast type="err" dur={4} errorResponse={errorResponse} />}</span>
+            <span>{!isPending && !response.isSuccess && < Toast type="err" seconds={3} errorResponse={errorResponse} />}</span>
             <form action={handleLogin} className="flex flex-col gap-6 justify-center m-auto h-dvh
             p-4 text-white max-w-200">
 
@@ -143,19 +143,19 @@ export default function Login() {
                     onBlur={() => dispatch({ type: 'Validate', feild: 'password' })}
                 />
 
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 text-page-fg">
                     <div className="flex gap-6">
                         <button
-                            type="reset" onClick={() => dispatch({ type: 'Clear' })} className="bg-status-danger py-2 px-6 rounded">
+                            type="reset" onClick={() => dispatch({ type: 'Clear' })} className="bg-danger-color text-danger-fg py-2 px-6 rounded">
                             Clear
                         </button>
                         <button disabled={isPending || checkForErrors(form.err)}
-                            className="bg-status-success py-2 px-6 rounded disabled:bg-gray-400 disabled:text-black">
+                            className="bg-accent-bg text-accent-fg py-2 px-6 rounded disabled:bg-surface-muted-bg disabled:text-surface-fg">
                             {isPending ? 'Processing' : 'Login'}
                         </button>
                     </div>
 
-                    <span>Dont have an account? <NavLink to='/register' className='text-highlight hover:bg-highlight hover:text-black py-1 px-2 rounded'>Register now!</NavLink></span>
+                    <span>Dont have an account? <NavLink to='/register' className='hover:bg-primary-bg hover:text-primary-fg py-1 px-2 underline rounded'>Register now!</NavLink></span>
                 </div>
             </form>
         </section>

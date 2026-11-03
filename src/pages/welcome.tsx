@@ -2,7 +2,7 @@ import { useNavigate, type NavigateFunction } from "react-router-dom";
 import useAutoLogin, { type Status } from "../hooks/useAutologin";
 
 
-function CTAButtons({ navTo, status }: { navTo: NavigateFunction, status:Status }) {
+function CTAButtons({ navTo, status }: { navTo: NavigateFunction, status: Status }) {
     return (
         <section className="flex flex-col gap-4">
             <span className="text-center">Our Auto login attempt [ {status} ], please login or register to continue</span>
@@ -25,7 +25,7 @@ export function WelcomeScreen() {
     }
 
     return (
-        <section className="flex flex-col gap-6 justify-center items-center max-w-300 m-auto text-white h-full mt-auto">
+        <section className="flex flex-col gap-6 justify-center items-center max-w-300 m-auto h-full mt-auto">
             <h1 className="text-2xl font-extrabold">Welcome to Everpet</h1>
             <h2 className="text-center">The backend is starting up please wait (You can expect this to take approx 20-50 seconds depending on your network connection)</h2>
             <h3>Status : {status} </h3>

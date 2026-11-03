@@ -7,6 +7,7 @@ import Input from "./input";
 import fetchCreatePet from "../API/fetch-create-pet";
 import PetContext from "../context/pets-context";
 import type { PetData } from "../types/pets-context";
+import Pet from "./pet-card";
 
 
 export default function SpeciesCreationForm() {
@@ -16,9 +17,13 @@ export default function SpeciesCreationForm() {
     if (!user)
         throw new Error('Auth context not set up properly or not provided here');
     const accessToken = user.userInfo?.accessToken ?? '';
+    const petContextData = useContext(PetContext);
+    if (!petContextData)
+        throw new Error('Pets context not set up properly or not provided here');
+    const { pets } = petContextData;
 
     return (
-        <section className="flex flex-col gap-6 bg-card-bg p-10">
+        <section className="flex flex-col gap-6 bg-surface-bg text-surface-fg p-10">
             <SpeciesSlider setSelected={setSelected} accessToken={accessToken} />
             <Popup popup={popup} accessToken={accessToken} selectedSpecies={selectedSpecies} />
             <button
@@ -27,6 +32,14 @@ export default function SpeciesCreationForm() {
             >Create {selectedSpecies?.name}
             </button>
             {selectedSpecies && <SpeciesInfo selectedSpecies={selectedSpecies} />}
+            <section>
+                <span>Created Pets : : </span>
+                <section className="flex flex-wrap gap-6">
+                    {pets.map(pet => (
+                        <Pet accessToken={accessToken} pet={pet} />
+                    ))}
+                </section>
+            </section>
         </section>
     );
 };
@@ -72,7 +85,7 @@ function SpeciesSlider({ setSelected, accessToken }: { setSelected: React.Dispat
                 <button className={sharedStyles.navButtons} onClick={() => move('prev')} disabled={hasError || !response}>&lt;</button>
                 {
                     configList && !isPending &&
-                    <span className="capitalize font-bold outline-2 outline-accent-bg py-2 rounded flex-1 text-center">
+                    <span className="capitalize font-bold outline-2 outline-accent-bg text-accent-fg py-2 rounded flex-1 text-center">
                         {configList[index]?.name}
                     </span>
                 }
@@ -135,15 +148,15 @@ function Popup({ popup, accessToken, selectedSpecies }: { popup: React.RefObject
 
 
     return (
-        <dialog ref={popup} className="bg-transparent h-dvh w-dvw text-white"
+        <dialog ref={popup} className="bg-transparent h-dvh w-dvw"
             onClick={() => popup.current?.close()}>
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="w-100 rounded-lg p-10 m-auto bg-card-bg outline outline-accent-bg">
+                className="w-100 rounded-lg p-10 m-auto bg-surface-muted-bg text-surface-muted-fg outline outline-accent-bg flex flex-col gap-2">
                 <Input name="Pet-Name" type="text" label="Enter pet name" id="pet-name"
                     val={name} onChange={(e) => setName(e.target.value)} hasLimit={40}
                 />
-                <button onClick={runFetch}>{isPending ? 'Creating' : 'Create'}</button>
+                <button className="outline-accent-bg outline hover:outline-none hover:bg-accent-bg py-2 px-4 rounded-full" onClick={runFetch}>{isPending ? 'Creating' : 'Create'}</button>
             </div>
         </dialog>
     );

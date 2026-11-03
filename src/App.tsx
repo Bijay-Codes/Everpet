@@ -14,7 +14,7 @@ function App() {
   return (
     <AuthContextProvider >
       <BrowserRouter>
-        <section className="bg-dark-page w-full h-screen relative">
+        <section className="bg-page-bg text-page-fg w-full h-screen relative">
           <ShowOffline />
           <Routes>
             <Route path="/" element={<WelcomeScreen />} />
