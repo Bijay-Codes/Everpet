@@ -1,5 +1,6 @@
 import fetchAbandonPet from "../API/fetch-abandon-pet";
 import type { PetData } from "../types/pets-context";
+import { formatFloat } from "../util/util";
 export default function Pet({ pet, accessToken }: { pet: PetData, accessToken: string }) {
     const { name, char, state, stats
     } = pet;
@@ -9,7 +10,6 @@ export default function Pet({ pet, accessToken }: { pet: PetData, accessToken: s
 
     const header = 'text-3xl font-extrabold';
     const subtext = 'text-lg font-medium inline-flex items-center';
-
     return (
         <div className="bg-card-bg p-6 flex flex-col gap-6 min-w-50">
             {/* basic info section */}
@@ -46,7 +46,7 @@ export default function Pet({ pet, accessToken }: { pet: PetData, accessToken: s
             <section className="flex flex-col gap-1">
                 <div className="flex gap-2">
                     <span>Hp / Max Hp : </span>
-                    <span className={subtext}>{Number(hp)} / {Number(maxHp)}</span>
+                    <span className={subtext}>{formatFloat(Number(hp))} / {Number(maxHp)}</span>
                 </div>
                 <div>
                     <div>
@@ -70,11 +70,11 @@ export default function Pet({ pet, accessToken }: { pet: PetData, accessToken: s
                 <div>
                     <div>
                         <span>Bond : </span>
-                        <span className={subtext}>{Number(bond)} / 100</span>
+                        <span className={subtext}>{formatFloat(Number(bond))} / 100</span>
                     </div>
                     <div>
                         <span>Stress : </span>
-                        <span className={subtext}>{Number(stress)} / 100</span>
+                        <span className={subtext}>{formatFloat(Number(stress))} / 100</span>
                     </div>
                 </div>
             </section>

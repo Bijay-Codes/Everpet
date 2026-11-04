@@ -1,6 +1,7 @@
 import { END_POINTS } from "./api-endpoints";
 
 export default async function fetchAbandonPet(petId: string, accessToken: string) {
+    console.log(petId)
     const res = await fetch(END_POINTS.abandonPet, {
         method: 'POST',
         credentials: 'include',

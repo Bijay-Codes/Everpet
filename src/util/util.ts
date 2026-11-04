@@ -68,9 +68,13 @@ export function checkValidInputData(data: string) {
     if (!trimmed)
         return 'Enter valid data continue';
     return null;
-}
+};
 
 export function checkForErrors(errors: Record<string, string | ''>) {
     const errorValueArr = Object.values(errors);
     return errorValueArr.some(vals => vals)
-}
+};
+
+export function formatFloat(float: number) {
+    return float.toFixed(2);
+};

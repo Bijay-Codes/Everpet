@@ -3,6 +3,7 @@ import fetchStorePets from "../API/fetch-storepets";
 import useHandleFetch from "../hooks/useHandleFetch";
 import { AuthContext } from "../context/auth-context";
 import type { PetData } from "../types/pets-context";
+import Pet from "./pet-card";
 
 export default function Store() {
     const userInfo = useContext(AuthContext);
@@ -30,14 +31,13 @@ export default function Store() {
 
         reset();
     }, [response, isPending, hasError, reset]);
-
     return (
         <main>
             <span>Pets in store : </span>
             {storeList.length > 0 && !isPending ?
                 (storeList.map(pet =>
-                    <div>
-                        <span>{pet.id}</span>
+                    <div className="flex flex-wrap gap-6">
+                        <Pet pet={pet} accessToken={accessToken} />
                     </div>
                 ))
                 :

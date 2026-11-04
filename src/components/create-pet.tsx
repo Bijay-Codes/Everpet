@@ -24,14 +24,17 @@ export default function SpeciesCreationForm() {
 
     return (
         <section className="flex flex-col gap-6 bg-surface-bg text-surface-fg p-10">
-            <SpeciesSlider setSelected={setSelected} accessToken={accessToken} />
-            <Popup popup={popup} accessToken={accessToken} selectedSpecies={selectedSpecies} />
-            <button
-                onClick={() => popup.current?.show()}
-                className="bg-accent-bg py-2 px-4 rounded-full"
-            >Create {selectedSpecies?.name}
-            </button>
-            {selectedSpecies && <SpeciesInfo selectedSpecies={selectedSpecies} />}
+            <div className="max-w-100 flex flex-col gap-6">
+                <SpeciesSlider setSelected={setSelected} accessToken={accessToken} />
+                <Popup popup={popup} accessToken={accessToken} selectedSpecies={selectedSpecies} />
+                <button
+                    onClick={() => popup.current?.show()}
+                    className="bg-accent-bg text-accent-fg py-2 px-4 rounded-full"
+                >Create {selectedSpecies?.name}
+                </button>
+
+                {selectedSpecies && <SpeciesInfo selectedSpecies={selectedSpecies} />}
+            </div>
             <section>
                 <span>Created Pets : : </span>
                 <section className="flex flex-wrap gap-6">
@@ -56,7 +59,6 @@ function SpeciesSlider({ setSelected, accessToken }: { setSelected: React.Dispat
         if (isPending || response)
             return;
         runFetch();
-        console.log(response)
         reset()
     }, [runFetch, isPending, response, reset]);
 
@@ -77,15 +79,15 @@ function SpeciesSlider({ setSelected, accessToken }: { setSelected: React.Dispat
         setSpecies(configList[index]);
     }, [index, setSpecies, configList]);
     const sharedStyles = {
-        navButtons: 'bg-card-bg rounded h-10 w-10 inline-flex justify-center items-center p-4 outline outline-accent-bg hover:bg-accent-bg'
+        navButtons: 'bg-card-bg rounded h-10 w-10 inline-flex justify-center items-center p-4 outline outline-accent-bg hover:bg-accent-bg hover:text-accent-fg'
     }
     return (
         <section>
-            <div className="flex gap-4 items-center w-full">
+            <div className="flex gap-4 items-center">
                 <button className={sharedStyles.navButtons} onClick={() => move('prev')} disabled={hasError || !response}>&lt;</button>
                 {
                     configList && !isPending &&
-                    <span className="capitalize font-bold outline-2 outline-accent-bg text-accent-fg py-2 rounded flex-1 text-center">
+                    <span className="capitalize font-bold outline-2 outline-accent-bg py-2 rounded flex-1 text-center">
                         {configList[index]?.name}
                     </span>
                 }
@@ -156,7 +158,10 @@ function Popup({ popup, accessToken, selectedSpecies }: { popup: React.RefObject
                 <Input name="Pet-Name" type="text" label="Enter pet name" id="pet-name"
                     val={name} onChange={(e) => setName(e.target.value)} hasLimit={40}
                 />
-                <button className="outline-accent-bg outline hover:outline-none hover:bg-accent-bg py-2 px-4 rounded-full" onClick={runFetch}>{isPending ? 'Creating' : 'Create'}</button>
+                <button className="outline-accent-bg outline hover:outline-none hover:bg-accent-bg hover:text-accent-fg py-2 px-4 rounded-full"
+                    onClick={runFetch}>
+                    {isPending ? 'Creating' : 'Create'}
+                </button>
             </div>
         </dialog>
     );
