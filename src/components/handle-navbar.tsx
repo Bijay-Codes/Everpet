@@ -3,9 +3,11 @@ import Navbar from "./navbar";
 
 export default function ProtectedNav() {
     return (
-        <main className="flex">
+        <main className="flex h-dvh">
             <Navbar />
-            <Outlet />
+            <div className="overflow-auto">
+                <Outlet />
+            </div>
         </main>
     )
 }

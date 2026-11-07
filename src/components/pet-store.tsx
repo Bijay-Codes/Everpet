@@ -27,23 +27,22 @@ export default function Store() {
         if (hasError)
             return;
 
-        setList(prev => [...prev, ...response as PetData[]]);
+        setList(prev => [...response as PetData[], ...prev]);
 
         reset();
     }, [response, isPending, hasError, reset]);
     return (
         <main>
-            <span>Pets in store : </span>
-            {storeList.length > 0 && !isPending ?
-                (storeList.map(pet =>
-                    <div className="flex flex-wrap gap-6">
+            <span>Pets in store : : </span>
+            <div className="flex flex-wrap gap-6">
+                {storeList.length > 0 && !isPending ?
+                    (storeList.map(pet =>
                         <Pet pet={pet} accessToken={accessToken} />
-                    </div>
-                ))
-                :
-                (<span>No pets exist</span>)
-            }
-
+                    ))
+                    :
+                    (<span>No pets exist</span>)
+                }
+            </div>
         </main>
     );
 };

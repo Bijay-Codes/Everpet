@@ -1,6 +1,9 @@
+import { useContext } from "react";
 import fetchAbandonPet from "../API/fetch-abandon-pet";
+import useHandleFetch from "../hooks/useHandleFetch";
 import type { PetData } from "../types/pets-context";
 import { formatFloat } from "../util/util";
+import PetContext from "../context/pets-context";
 export default function Pet({ pet, accessToken }: { pet: PetData, accessToken: string }) {
     const { name, char, state, stats
     } = pet;
@@ -8,8 +11,18 @@ export default function Pet({ pet, accessToken }: { pet: PetData, accessToken: s
     const { isSick, isDead, isHealing, isHungry } = state;
     const { sicknessLiftAt, caloriesConsumed, caloriesNeeded, bond, stress, appetite, daysUnderfed, hp, maxHp } = stats;
 
+    const petInfo = useContext(PetContext);
+    if (!petInfo || !petInfo.setPetsList)
+        throw new Error('PetContext not set up properly or not being able to accessed');
+
+    const updatePetList = (id: string) => {
+        petInfo.setPetsList(prev => prev.filter(pet => pet.id !== id));
+    };
+
     const header = 'text-3xl font-extrabold';
     const subtext = 'text-lg font-medium inline-flex items-center';
+    const { runFetch, isPending, hasError } = useHandleFetch(() => fetchAbandonPet(pet.id, accessToken));
+
     return (
         <div className="bg-card-bg p-6 flex flex-col gap-6 min-w-50">
             {/* basic info section */}
@@ -88,8 +101,12 @@ export default function Pet({ pet, accessToken }: { pet: PetData, accessToken: s
                 </button>
                 <button
                     className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
-                    onClick={() => fetchAbandonPet(pet.id, accessToken)}>
-                    Abandon
+                    onClick={async () => {
+                        await runFetch();
+                        if (!hasError && !isPending)
+                            updatePetList(pet.id);
+                    }}>
+                    {isPending ? 'Processing' : hasError ? 'Retry' : 'Abandon'}
                 </button>
             </section>
         </div>

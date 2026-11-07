@@ -37,7 +37,7 @@ export default function SpeciesCreationForm() {
             </div>
             <section>
                 <span>Created Pets : : </span>
-                <section className="flex flex-wrap gap-6">
+                <section className="flex flex-wrap gap-6 overflow-auto">
                     {pets.map(pet => (
                         <Pet accessToken={accessToken} pet={pet} />
                     ))}
@@ -148,10 +148,10 @@ function Popup({ popup, accessToken, selectedSpecies }: { popup: React.RefObject
         popup?.current?.close();
     }, [isPending, response, hasError, reset, popup, setPetsList, pets]);
 
-
     return (
         <dialog ref={popup} className="bg-transparent h-dvh w-dvw"
-            onClick={() => popup.current?.close()}>
+            onClick={() => popup.current?.close()}
+            onClose={() => setName('')}>
             <div
                 onClick={(e) => e.stopPropagation()}
                 className="w-100 rounded-lg p-10 m-auto bg-surface-muted-bg text-surface-muted-fg outline outline-accent-bg flex flex-col gap-2">
@@ -159,8 +159,12 @@ function Popup({ popup, accessToken, selectedSpecies }: { popup: React.RefObject
                     val={name} onChange={(e) => setName(e.target.value)} hasLimit={40}
                 />
                 <button className="outline-accent-bg outline hover:outline-none hover:bg-accent-bg hover:text-accent-fg py-2 px-4 rounded-full"
-                    onClick={runFetch}>
-                    {isPending ? 'Creating' : 'Create'}
+                    onClick={async () => {
+                        await runFetch()
+                        if (!hasError && !isPending)
+                            setName('');
+                    }}>
+                    {isPending ? 'Creating' : hasError ? 'Retry' : 'Confirm'}
                 </button>
             </div>
         </dialog>
