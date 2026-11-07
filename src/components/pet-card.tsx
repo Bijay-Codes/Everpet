@@ -4,7 +4,7 @@ import useHandleFetch from "../hooks/useHandleFetch";
 import type { PetData } from "../types/pets-context";
 import { formatFloat } from "../util/util";
 import PetContext from "../context/pets-context";
-export default function Pet({ pet, accessToken }: { pet: PetData, accessToken: string }) {
+export default function Pet({ pet, accessToken, type }: { pet: PetData, accessToken: string, type: 'pet-store' | 'pet-card' }) {
     const { name, char, state, stats
     } = pet;
     const { species, lifespan, sicknessStartedAt, diet } = char;
@@ -91,24 +91,30 @@ export default function Pet({ pet, accessToken }: { pet: PetData, accessToken: s
                     </div>
                 </div>
             </section>
-            <section className="flex gap-4">
-                <button
-                    className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
-                >Feed
-                </button>
-                <button
-                    className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg">Interact
-                </button>
-                <button
-                    className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
-                    onClick={async () => {
-                        await runFetch();
-                        if (!hasError && !isPending)
-                            updatePetList(pet.id);
-                    }}>
-                    {isPending ? 'Processing' : hasError ? 'Retry' : 'Abandon'}
-                </button>
-            </section>
+
+            {type === 'pet-card' &&
+                <section className="flex gap-4">
+                    <button
+                        className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
+                    >Feed
+                    </button>
+                    <button
+                        className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg">Interact
+                    </button>
+                    <button
+                        className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
+                        onClick={async () => {
+                            await runFetch();
+                            if (!hasError && !isPending)
+                                updatePetList(pet.id);
+                        }}>
+                        {isPending ? 'Processing' : hasError ? 'Retry' : 'Abandon'}
+                    </button>
+                </section>
+            }
+            {type === 'pet-store' &&
+                <button className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg">Adopt</button>
+            }
         </div>
     );
 };

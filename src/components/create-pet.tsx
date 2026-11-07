@@ -39,7 +39,7 @@ export default function SpeciesCreationForm() {
                 <span>Created Pets : : </span>
                 <section className="flex flex-wrap gap-6 overflow-auto">
                     {pets.map(pet => (
-                        <Pet accessToken={accessToken} pet={pet} />
+                        <Pet accessToken={accessToken} pet={pet} type='pet-card' />
                     ))}
                 </section>
             </section>

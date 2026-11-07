@@ -37,7 +37,7 @@ export default function Store() {
             <div className="flex flex-wrap gap-6">
                 {storeList.length > 0 && !isPending ?
                     (storeList.map(pet =>
-                        <Pet pet={pet} accessToken={accessToken} />
+                        <Pet pet={pet} accessToken={accessToken} type='pet-store' />
                     ))
                     :
                     (<span>No pets exist</span>)
