@@ -1,9 +1,10 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import fetchAbandonPet from "../API/fetch-abandon-pet";
 import useHandleFetch from "../hooks/useHandleFetch";
 import type { PetData } from "../types/pets-context";
 import { formatFloat } from "../util/util";
 import PetContext from "../context/pets-context";
+import { fetchFeedPet } from "../API/fetch-feed-pet";
 export default function Pet({ pet, accessToken, type }: { pet: PetData, accessToken: string, type: 'pet-store' | 'pet-card' }) {
     const { name, char, state, stats
     } = pet;
@@ -15,14 +16,18 @@ export default function Pet({ pet, accessToken, type }: { pet: PetData, accessTo
     if (!petInfo || !petInfo.setPetsList)
         throw new Error('PetContext not set up properly or not being able to accessed');
 
-    const updatePetList = (id: string) => {
+    const removeFromPetList = (id: string) => {
         petInfo.setPetsList(prev => prev.filter(pet => pet.id !== id));
     };
 
+    const replacePetInList = useCallback((id: string, newPetData: PetData) => {
+        petInfo.setPetsList(prev => prev.map(pet => pet.id === id ? newPetData : pet))
+    }, [petInfo])
+
     const header = 'text-3xl font-extrabold';
     const subtext = 'text-lg font-medium inline-flex items-center';
-    const { runFetch, isPending, hasError } = useHandleFetch(() => fetchAbandonPet(pet.id, accessToken));
-
+    const { runFetch: abandon, isPending: abandoning, hasError: failedAbandon } = useHandleFetch(() => fetchAbandonPet(pet.id, accessToken));
+    const { runFetch: feed, isPending: isFeeding, hasError: failedFeeding } = useHandleFetch(() => fetchFeedPet(pet.id, accessToken));
     return (
         <div className="bg-card-bg p-6 flex flex-col gap-6 min-w-50">
             {/* basic info section */}
@@ -95,8 +100,9 @@ export default function Pet({ pet, accessToken, type }: { pet: PetData, accessTo
             {type === 'pet-card' &&
                 <section className="flex gap-4">
                     <button
+                        onClick={feed}
                         className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
-                    >Feed
+                    >{isFeeding ? 'Processing' : failedFeeding ? 'Retry' : 'Feed'}
                     </button>
                     <button
                         className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg">Interact
@@ -104,11 +110,11 @@ export default function Pet({ pet, accessToken, type }: { pet: PetData, accessTo
                     <button
                         className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
                         onClick={async () => {
-                            await runFetch();
-                            if (!hasError && !isPending)
-                                updatePetList(pet.id);
+                            await abandon();
+                            if (!failedAbandon && !abandoning)
+                                removeFromPetList(pet.id);
                         }}>
-                        {isPending ? 'Processing' : hasError ? 'Retry' : 'Abandon'}
+                        {abandoning ? 'Processing' : failedAbandon ? 'Retry' : 'Abandon'}
                     </button>
                 </section>
             }

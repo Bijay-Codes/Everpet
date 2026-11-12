@@ -10,5 +10,7 @@ export const END_POINTS = {
     allUserPets: `${import.meta.env.VITE_API_URL}/petstore/pets`,
     getCreatableSpecies: `${import.meta.env.VITE_API_URL}/petstore/species`,
     storePets: `${import.meta.env.VITE_API_URL}/petstore/`,
-    abandonPet: `${import.meta.env.VITE_API_URL}/petstore/abandon`
+    abandonPet: `${import.meta.env.VITE_API_URL}/petstore/abandon`,
+    feedPet: `${import.meta.env.VITE_API_URL}/petstore/feed`
+
 } as const;
