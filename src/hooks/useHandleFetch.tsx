@@ -13,27 +13,29 @@ function useHandleFetch(
     }, []);
 
     const runFetch = useCallback(async () => {
+        let resToReturn: unknown;
         setPending(true);
         reset();
         try {
-            const response = await callBack();
-            const parsed = await response.json();
-
+            const serverResponse = await callBack();
+            const parsed = await serverResponse.json();
             if (parsed.isSuccess) {
                 setResponse(parsed.data);
+                resToReturn = parsed.data;
             } else {
                 setHasError(true);
-                setResponse(parsed.res.err as ErrorResponse);
+                setResponse(parsed.err as ErrorResponse);
             };
         } catch {
-            setHasError(true);
-            setResponse({
+            const ourGeneralErrResponse = {
                 message: 'Something went wrong with parsing the response',
                 code: 500
-            } as ErrorResponse);
+            };
+            setHasError(true);
+            setResponse(ourGeneralErrResponse);
         };
         setPending(false);
-
+        return resToReturn;
     }, [callBack, reset]);
     return { response, isPending, runFetch, hasError, reset };
 };

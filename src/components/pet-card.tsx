@@ -6,11 +6,10 @@ import { formatFloat } from "../util/util";
 import PetContext from "../context/pets-context";
 import { fetchFeedPet } from "../API/fetch-feed-pet";
 export default function Pet({ pet, accessToken, type }: { pet: PetData, accessToken: string, type: 'pet-store' | 'pet-card' }) {
-    const { name, char, state, stats
+    const { name, char, stats
     } = pet;
-    const { species, lifespan, sicknessStartedAt, diet } = char;
-    const { isSick, isDead, isHealing, isHungry } = state;
-    const { sicknessLiftAt, caloriesConsumed, caloriesNeeded, bond, stress, appetite, daysUnderfed, hp, maxHp } = stats;
+    const { species, lifespan, diet } = char;
+    const { caloriesConsumed, caloriesNeeded, bond, stress, appetite, daysUnderfed, hp, maxHp } = stats;
 
     const petInfo = useContext(PetContext);
     if (!petInfo || !petInfo.setPetsList)
@@ -40,26 +39,7 @@ export default function Pet({ pet, accessToken, type }: { pet: PetData, accessTo
                 <span>Expected to live {Number(lifespan) / 30} months</span>
             </section>
 
-            {/* status effects section */}
-            <section>
-                {isDead && (
-                    <span>{name} is long gone but never truly left us</span>
-                )}
-                {isSick && !isHealing && (
-                    <span>{name} is Sick!</span>
-                )}
-                {isSick && isHealing && (
-                    <div>
-                        <span>Sick since {sicknessStartedAt.getHours()} hours</span>
-                        <span>{name} is Expected to heal at {sicknessLiftAt.toLocaleString()}</span>
-                    </div>
-                )}
-                {isHungry && (
-                    <span>{name} is hungry!</span>
-                )}
-
-            </section>
-
+            <StatusPane pet={pet} />
 
             <section className="flex flex-col gap-1">
                 <div className="flex gap-2">
@@ -100,7 +80,12 @@ export default function Pet({ pet, accessToken, type }: { pet: PetData, accessTo
             {type === 'pet-card' &&
                 <section className="flex gap-4">
                     <button
-                        onClick={feed}
+                        onClick={async () => {
+                            const response = await feed();
+                            if (!response)
+                                return;
+                            replacePetInList(pet.id, response as PetData);
+                        }}
                         className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
                     >{isFeeding ? 'Processing' : failedFeeding ? 'Retry' : 'Feed'}
                     </button>
@@ -110,9 +95,10 @@ export default function Pet({ pet, accessToken, type }: { pet: PetData, accessTo
                     <button
                         className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg"
                         onClick={async () => {
-                            await abandon();
-                            if (!failedAbandon && !abandoning)
-                                removeFromPetList(pet.id);
+                            const response = await abandon();
+                            if (!response)
+                                return;
+                            removeFromPetList(pet.id);
                         }}>
                         {abandoning ? 'Processing' : failedAbandon ? 'Retry' : 'Abandon'}
                     </button>
@@ -122,5 +108,43 @@ export default function Pet({ pet, accessToken, type }: { pet: PetData, accessTo
                 <button className="py-2 px-4 bg-white text-pink-800 rounded outline outline-accent-bg">Adopt</button>
             }
         </div>
+    );
+};
+
+function StatusPane({ pet }: { pet: PetData }) {
+    const { name } = pet;
+    const { isSick, isDead, isHealing, isHungry } = pet.state;
+    const { sicknessLiftAt } = pet.stats;
+    const { sicknessStartedAt } = pet.char;
+    return (
+        <>
+            {/* status effects section */}
+            <section>
+                {
+                    isDead && (
+                        <span>{name} is long gone but never truly left us</span>
+                    )
+                }
+                {
+                    isSick && !isHealing && (
+                        <span>{name} is Sick!</span>
+                    )
+                }
+                {
+                    isSick && isHealing && (
+                        <div>
+                            <span>Sick since {sicknessStartedAt.getHours()} hours</span>
+                            <span>{name} is Expected to heal at {sicknessLiftAt.toLocaleString()}</span>
+                        </div>
+                    )
+                }
+                {
+                    isHungry && (
+                        <span>{name} is hungry!</span>
+                    )
+                }
+
+            </section >
+        </>
     );
 };
